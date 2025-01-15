@@ -1,10 +1,11 @@
 'use client'
 
-import React from 'react';
+import React, { JSX, useState } from 'react';
 import { Search, ShoppingCart } from 'lucide-react';
+import { Category } from './types';
+import CarpenterServices from './carpenter-service/page';
 import BottomNavigation from '../../components/navigation/BottomNavigation';
-
-const categories = [
+const categories: Category[] = [
   { icon: "🔨", name: "Carpenter", services: "20 Services" },
   { icon: "🧹", name: "Cleaner", services: "14 Services" },
   { icon: "🎨", name: "Painter", services: "8 Services" },
@@ -14,7 +15,23 @@ const categories = [
   { icon: "✂️", name: "Men's Salon", services: "5 Services" },
 ];
 
-export default function CategoriesPage() {
+export default function CategoriesPage(): JSX.Element {
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  const handleCategoryClick = (categoryName: string): void => {
+    if (categoryName === "Carpenter") {
+      setSelectedCategory(categoryName);
+    }
+  };
+
+  const handleBack = (): void => {
+    setSelectedCategory(null);
+  };
+
+  if (selectedCategory === "Carpenter") {
+    return <CarpenterServices onBack={handleBack} />;
+  }
+
   return (
     <main className="min-h-screen bg-white pb-20">
       {/* Header */}
@@ -35,7 +52,8 @@ export default function CategoriesPage() {
         {categories.map((category, index) => (
           <div
             key={index}
-            className="flex items-center py-4 border-b border-gray-100 last:border-0"
+            className="flex items-center py-4 border-b border-gray-100 last:border-0 cursor-pointer"
+            onClick={() => handleCategoryClick(category.name)}
           >
             <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-2xl mr-4">
               {category.icon}
