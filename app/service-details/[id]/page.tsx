@@ -1,52 +1,81 @@
-// app/service-details/page.tsx
-
 'use client'
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ChevronLeft, Star, Phone, MessageSquare, Map, Share2, X } from 'lucide-react';
-import { useState } from 'react';
 
-// Add TypeScript interfaces
 interface Review {
   id: number;
-  name: string;
+  userName: string;
   rating: number;
   date: string;
   comment: string;
-  avatar: string;
+  userAvatar: string;
 }
 
-const reviews: Review[] = [
-  {
-    id: 1,
-    name: "Perry Wilson",
-    rating: 5,
-    date: "04 Apr 2023",
-    comment: "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.",
-    avatar: "/api/placeholder/40/40"
-  },
-  {
-    id: 2,
-    name: "Robert Fox",
-    rating: 5,
-    date: "03 Apr 2023",
-    comment: "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.",
-    avatar: "/api/placeholder/40/40"
-  }
-];
+interface Service {
+  id: number;
+  category: {
+    name: string;
+    path: string;
+  };
+  title: string;
+  description: string;
+  price: number;
+  originalPrice: number;
+  rating: number;
+  totalReviews: number;
+  provider: {
+    name: string;
+    image: string;
+    role: string;
+  };
+  image: string;
+  reviews: Review[];
+}
 
-export default function ServiceDetailPage() {
+export default function ServiceDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const [service, setService] = useState<Service | null>(null);
+  const [loading, setLoading] = useState(true);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<number>(29);
   const [selectedTime, setSelectedTime] = useState<string>("11:00 AM");
+
+  const id = React.use(params).id;
+
+  useEffect(() => {
+    const fetchServiceDetails = async () => {
+      try {
+        const response = await fetch(`http://localhost:8000/api/services/${id}`);
+        if (!response.ok) {
+          throw new Error('Service not found');
+        }
+        const data = await response.json();
+        setService(data);
+      } catch (error) {
+        console.error('Error fetching service details:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchServiceDetails();
+  }, [id]);
+
+  if (loading) {
+    return <div className="p-4">Loading...</div>;
+  }
+
+  if (!service) {
+    return <div className="p-4">Service not found</div>;
+  }
 
   return (
     <>
       <main className={`min-h-screen bg-gray-50 pb-24 ${isBookingModalOpen ? 'blur-sm' : ''}`}>
         {/* Header */}
         <div className="bg-white p-4 flex items-center justify-between sticky top-0 z-10">
-          <Link href="/category/cleaning">
+          <Link href={`/category/${service.category.path}`}>
             <ChevronLeft className="w-6 h-6 text-gray-900" />
           </Link>
           <h1 className="text-lg font-semibold text-gray-900">Service Details</h1>
@@ -56,8 +85,8 @@ export default function ServiceDetailPage() {
         {/* Service Image */}
         <div className="w-full h-64">
           <img
-            src="/api/placeholder/400/300"
-            alt="Living Room Cleaning"
+            src={service.image}
+            alt={service.title}
             className="w-full h-full object-cover"
           />
         </div>
@@ -65,22 +94,20 @@ export default function ServiceDetailPage() {
         {/* Service Info */}
         <div className="bg-white p-4">
           <div className="flex items-center mb-2">
-            {[...Array(5)].map((_, i) => (
+            {[...Array(service.rating)].map((_, i) => (
               <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
             ))}
-            <span className="text-sm text-gray-700 ml-2">(240 Reviews)</span>
+            <span className="text-sm text-gray-700 ml-2">({service.totalReviews} Reviews)</span>
           </div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Living Room Cleaning</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">{service.title}</h2>
           <div className="flex items-center justify-between mb-4">
-            <span className="text-2xl font-bold text-gray-900">$200</span>
-            <span className="text-lg text-gray-500 line-through">$250</span>
+            <span className="text-2xl font-bold text-gray-900">${service.price}</span>
+            <span className="text-lg text-gray-500 line-through">${service.originalPrice}</span>
           </div>
 
           <div className="border-t pt-4">
             <h3 className="font-semibold text-gray-900 mb-2">Description</h3>
-            <p className="text-gray-700 text-sm">
-              It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters.
-            </p>
+            <p className="text-gray-700 text-sm">{service.description}</p>
           </div>
         </div>
 
@@ -89,13 +116,13 @@ export default function ServiceDetailPage() {
           <h3 className="font-semibold text-gray-900 mb-3">About Service Provider</h3>
           <div className="flex items-center">
             <img
-              src="/api/placeholder/48/48"
-              alt="Ronald Richards"
+              src={service.provider.image}
+              alt={service.provider.name}
               className="w-12 h-12 rounded-full"
             />
             <div className="ml-3">
-              <h4 className="font-medium text-gray-900">Ronald Richards</h4>
-              <p className="text-sm text-gray-700">Service Provider</p>
+              <h4 className="font-medium text-gray-900">{service.provider.name}</h4>
+              <p className="text-sm text-gray-700">{service.provider.role}</p>
             </div>
           </div>
         </div>
@@ -103,16 +130,16 @@ export default function ServiceDetailPage() {
         {/* Reviews */}
         <div className="bg-white mt-2 p-4">
           <h3 className="font-semibold text-gray-900 mb-3">Reviews</h3>
-          {reviews.map((review) => (
+          {service.reviews.map((review) => (
             <div key={review.id} className="mb-4 last:mb-0">
               <div className="flex items-center mb-2">
                 <img
-                  src={review.avatar}
-                  alt={review.name}
+                  src={review.userAvatar}
+                  alt={review.userName}
                   className="w-10 h-10 rounded-full"
                 />
                 <div className="ml-3">
-                  <h4 className="font-medium text-gray-900">{review.name}</h4>
+                  <h4 className="font-medium text-gray-900">{review.userName}</h4>
                   <div className="flex items-center">
                     {[...Array(review.rating)].map((_, i) => (
                       <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />
@@ -236,7 +263,17 @@ export default function ServiceDetailPage() {
           </div>
 
           {/* Proceed Button */}
-          <Link href="/make-booking" onClick={() => setIsBookingModalOpen(false)}>
+          <Link 
+            href={{
+              pathname: '/make-booking',
+              query: { 
+                serviceId: service.id,
+                date: selectedDate,
+                time: selectedTime
+              }
+            }} 
+            onClick={() => setIsBookingModalOpen(false)}
+          >
             <button className="w-full bg-blue-500 text-white py-4 rounded-xl font-medium mt-6 hover:bg-blue-600 transition-colors">
               Proceed to Checkout
             </button>

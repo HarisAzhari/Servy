@@ -239,7 +239,7 @@ export default function BookingPage() {
         <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t">
           <Link href="/payment">
             <button className="w-full bg-blue-500 hover:bg-blue-600 text-white py-4 rounded-xl font-medium transition-colors">
-              Proceed to Checkout
+              Proceed to Payment
             </button>
           </Link>
         </div>
