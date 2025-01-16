@@ -6,7 +6,7 @@ import Link from 'next/link';
 import BottomNavigation from '../../components/navigation/BottomNavigation';
 import FilterOverlay from '../../components/navigation/filter';
 
-// Type definitions
+// Keep interfaces as they are
 interface Provider {
   name: string;
   image: string;
@@ -27,33 +27,33 @@ interface Service {
 
 const ServiceCard = ({ service }: { service: Service }) => {
   return (
-    <div className="bg-white rounded-xl shadow-sm p-4">
+    <div className="bg-card-background rounded-xl shadow-sm p-4">
       <img src={service.image} alt={service.title} className="w-full h-48 object-cover rounded-xl mb-4" />
       <div className="flex items-center mb-2">
         {[...Array(5)].map((_, i) => (
-          <Star key={i} className="w-4 h-4 fill-blue-500 text-blue-500" />
+          <Star key={i} className="w-4 h-4 fill-rating-color text-rating-color" />
         ))}
-        <span className="ml-2 text-sm text-blue-400">({service.reviews} Reviews)</span>
+        <span className="ml-2 text-sm text-text-secondary">({service.reviews} Reviews)</span>
       </div>
-      <h3 className="font-semibold mb-1 text-blue-900">{service.title}</h3>
+      <h3 className="font-semibold mb-1 text-text-primary">{service.title}</h3>
       <div className="flex items-center justify-between mb-3">
         <div>
-          <span className="text-lg font-bold text-blue-600">${service.price} </span>
-          <span className="text-sm text-blue-300 line-through">${service.originalPrice}</span>
+          <span className="text-lg font-bold text-price-color">${service.price} </span>
+          <span className="text-sm text-text-secondary line-through">${service.originalPrice}</span>
         </div>
-        <button className="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+        <button className="bg-nav-active text-white px-6 py-2 rounded-lg font-medium hover:bg-nav-active/90 transition-colors">
           Add
         </button>
       </div>
       <div className="flex items-center">
-        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-          <span className="text-blue-600 font-medium">
+        <div className="w-10 h-10 bg-card-background border border-border-color rounded-full flex items-center justify-center">
+          <span className="text-text-primary font-medium">
             {service.provider.name.split(' ').map(n => n[0]).join('')}
           </span>
         </div>
         <div className="ml-2">
-          <p className="text-sm font-medium text-blue-900">{service.provider.name}</p>
-          <p className="text-xs text-blue-400">{service.provider.role}</p>
+          <p className="text-sm font-medium text-text-primary">{service.provider.name}</p>
+          <p className="text-xs text-text-secondary">{service.provider.role}</p>
         </div>
       </div>
     </div>
@@ -97,24 +97,24 @@ export default function HomePage() {
   }, []);
 
   return (
-    <main className="bg-blue-50 pb-20 relative">
+    <main className="bg-background pb-20 relative">
       {showFilter && <FilterOverlay onClose={() => setShowFilter(false)} />}
       
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-white p-4 space-y-4">
+      <div className="sticky top-0 z-10 bg-card-background p-4 space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-start">
-            <MapPin className="text-blue-600 w-5 h-5 mt-1" />
+            <MapPin className="text-nav-active w-5 h-5 mt-1" />
             <div className="ml-2">
-              <p className="text-xs text-blue-400">Delivery Address</p>
-              <p className="text-sm font-medium text-blue-900">2118 Thornridge California</p>
+              <p className="text-xs text-text-secondary">Delivery Address</p>
+              <p className="text-sm font-medium text-text-primary">2118 Thornridge California</p>
             </div>
           </div>
           <div className="relative">
-            <div className="w-8 h-8 rounded-full bg-blue-100 shadow-sm flex items-center justify-center">
-              <Menu className="w-5 h-5 text-blue-600" />
+            <div className="w-8 h-8 rounded-full bg-card-background border border-border-color shadow-sm flex items-center justify-center">
+              <Menu className="w-5 h-5 text-text-primary" />
             </div>
-            <div className="absolute -top-1 -right-1 w-4 h-4 bg-blue-600 rounded-full text-white text-xs flex items-center justify-center">
+            <div className="absolute -top-1 -right-1 w-4 h-4 bg-nav-active rounded-full text-white text-xs flex items-center justify-center">
               1
             </div>
           </div>
@@ -123,16 +123,16 @@ export default function HomePage() {
         {/* Search Bar with Filter */}
         <div className="flex gap-2">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-400 w-5 h-5" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary w-5 h-5" />
             <input
               type="text"
               placeholder="Search"
-              className="w-full py-3 pl-12 pr-4 bg-blue-50 rounded-lg text-sm text-blue-900 placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full py-3 pl-12 pr-4 bg-search-bg rounded-lg text-sm text-search-text placeholder-text-secondary focus:outline-none focus:ring-2 focus:ring-nav-active"
             />
           </div>
           <button 
             onClick={() => setShowFilter(true)}
-            className="p-3 bg-blue-600 rounded-lg flex items-center justify-center hover:bg-blue-700 transition-colors"
+            className="p-3 bg-nav-active rounded-lg flex items-center justify-center hover:bg-nav-active/90 transition-colors"
           >
             <SlidersHorizontal className="w-5 h-5 text-white" />
           </button>
@@ -142,8 +142,8 @@ export default function HomePage() {
       {/* Categories */}
       <div className="px-4 mb-6 mt-4">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-blue-900">All Categories</h2>
-          <Link href="/category" className="text-blue-600 text-sm font-medium">See All</Link>
+          <h2 className="text-lg font-semibold text-text-primary">All Categories</h2>
+          <Link href="/category" className="text-nav-active text-sm font-medium">See All</Link>
         </div>
         
         <div className="grid grid-cols-4 gap-4">
@@ -153,10 +153,10 @@ export default function HomePage() {
               key={index} 
               className="flex flex-col items-center"
             >
-              <div className="w-14 h-14 bg-white shadow-sm rounded-xl flex items-center justify-center text-xl mb-2">
+              <div className="w-14 h-14 bg-card-background border border-border-color shadow-sm rounded-xl flex items-center justify-center text-xl mb-2">
                 {category.icon}
               </div>
-              <span className="text-xs text-blue-900 text-center">{category.name}</span>
+              <span className="text-xs text-text-primary text-center">{category.name}</span>
             </Link>
           ))}
         </div>
@@ -165,27 +165,27 @@ export default function HomePage() {
       {/* Best Services */}
       <div className="px-4 mb-20">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-blue-900">Best Services</h2>
-          <button className="text-blue-600 text-sm font-medium">See All</button>
+          <h2 className="text-lg font-semibold text-text-primary">Best Services</h2>
+          <button className="text-nav-active text-sm font-medium">See All</button>
         </div>
 
         <div className="space-y-4">
           {loading ? (
-            <div className="bg-white rounded-xl shadow-sm p-4">
-              <div className="w-full h-48 bg-gray-200 rounded-xl mb-4 animate-pulse" />
+            <div className="bg-card-background rounded-xl shadow-sm p-4">
+              <div className="w-full h-48 bg-border-color rounded-xl mb-4 animate-pulse" />
               <div className="flex items-center mb-2">
-                <div className="w-20 h-4 bg-gray-200 rounded animate-pulse" />
+                <div className="w-20 h-4 bg-border-color rounded animate-pulse" />
               </div>
-              <div className="w-3/4 h-6 bg-gray-200 rounded mb-3 animate-pulse" />
+              <div className="w-3/4 h-6 bg-border-color rounded mb-3 animate-pulse" />
               <div className="flex items-center justify-between mb-3">
-                <div className="w-24 h-6 bg-gray-200 rounded animate-pulse" />
-                <div className="w-20 h-8 bg-gray-200 rounded animate-pulse" />
+                <div className="w-24 h-6 bg-border-color rounded animate-pulse" />
+                <div className="w-20 h-8 bg-border-color rounded animate-pulse" />
               </div>
               <div className="flex items-center">
-                <div className="w-10 h-10 bg-gray-200 rounded-full animate-pulse" />
+                <div className="w-10 h-10 bg-border-color rounded-full animate-pulse" />
                 <div className="ml-2">
-                  <div className="w-32 h-4 bg-gray-200 rounded mb-1 animate-pulse" />
-                  <div className="w-24 h-3 bg-gray-200 rounded animate-pulse" />
+                  <div className="w-32 h-4 bg-border-color rounded mb-1 animate-pulse" />
+                  <div className="w-24 h-3 bg-border-color rounded animate-pulse" />
                 </div>
               </div>
             </div>
@@ -195,31 +195,31 @@ export default function HomePage() {
             ))
           ) : (
             // Fallback service card
-            <div className="bg-white rounded-xl shadow-sm p-4">
+            <div className="bg-card-background rounded-xl shadow-sm p-4">
               <img src="/api/placeholder/400/200" alt="Kitchen Cleaning" className="w-full h-48 object-cover rounded-xl mb-4" />
               <div className="flex items-center mb-2">
                 {[1, 2, 3, 4, 5].map((star) => (
-                  <span key={star} className="text-blue-500">★</span>
+                  <Star key={star} className="w-4 h-4 fill-rating-color text-rating-color" />
                 ))}
-                <span className="ml-2 text-sm text-blue-400">(130 Reviews)</span>
+                <span className="ml-2 text-sm text-text-secondary">(130 Reviews)</span>
               </div>
-              <h3 className="font-semibold mb-1 text-blue-900">Complete Kitchen Cleaning</h3>
+              <h3 className="font-semibold mb-1 text-text-primary">Complete Kitchen Cleaning</h3>
               <div className="flex items-center justify-between mb-3">
                 <div>
-                  <span className="text-lg font-bold text-blue-600">$150 </span>
-                  <span className="text-sm text-blue-300 line-through">$180</span>
+                  <span className="text-lg font-bold text-price-color">$150 </span>
+                  <span className="text-sm text-text-secondary line-through">$180</span>
                 </div>
-                <button className="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                <button className="bg-nav-active text-white px-6 py-2 rounded-lg font-medium hover:bg-nav-active/90 transition-colors">
                   Add
                 </button>
               </div>
               <div className="flex items-center">
-                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                  <span className="text-blue-600 font-medium">MW</span>
+                <div className="w-10 h-10 bg-card-background border border-border-color rounded-full flex items-center justify-center">
+                  <span className="text-text-primary font-medium">MW</span>
                 </div>
                 <div className="ml-2">
-                  <p className="text-sm font-medium text-blue-900">Mark Willions</p>
-                  <p className="text-xs text-blue-400">Service Provider</p>
+                  <p className="text-sm font-medium text-text-primary">Mark Willions</p>
+                  <p className="text-xs text-text-secondary">Service Provider</p>
                 </div>
               </div>
             </div>

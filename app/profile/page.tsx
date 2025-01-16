@@ -4,8 +4,13 @@ import React from 'react';
 import Link from 'next/link';
 import { ChevronRight, Edit2, Lock, BookOpen, MapPin, Eye, Shield, FileText, LogOut, Home, LayoutGrid, Calendar, MessageSquare, User } from 'lucide-react';
 import Image from 'next/image';
+import { useTheme } from '@/context/ThemeContext';
+
+
 
 export default function ProfilePage() {
+  const { isDarkMode, toggleDarkMode } = useTheme();
+
   return (
     <main className="min-h-screen bg-white">
       <div className="p-4">
@@ -65,15 +70,28 @@ export default function ProfilePage() {
           </Link>
 
           <div className="flex items-center justify-between p-3 hover:bg-gray-50">
-            <div className="flex items-center">
-              <Eye className="w-5 h-5 text-gray-600 mr-3" />
-              <span>Dark Mode</span>
-            </div>
-            <div className="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" value="" className="sr-only peer" />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-            </div>
-          </div>
+  <div className="flex items-center">
+    <Eye className="w-5 h-5 text-gray-600 mr-3" />
+    <span>Dark Mode</span>
+  </div>
+  <div className="relative inline-flex items-center cursor-pointer">
+    <input 
+      type="checkbox" 
+      checked={isDarkMode}
+      onChange={toggleDarkMode}
+      className="sr-only peer" 
+    />
+    <div 
+      className={`w-11 h-6 bg-gray-200 rounded-full peer 
+        after:content-[''] after:absolute after:top-[2px] after:left-[2px] 
+        after:bg-white after:border-gray-300 after:border after:rounded-full 
+        after:h-5 after:w-5 after:transition-all
+        ${isDarkMode ? 'bg-blue-600 after:translate-x-full' : ''}`}
+      onClick={toggleDarkMode}
+    ></div>
+  </div>
+</div>
+
 
           <Link href="/privacy" className="flex items-center justify-between p-3 hover:bg-gray-50">
             <div className="flex items-center">
@@ -104,7 +122,7 @@ export default function ProfilePage() {
           <Home className="w-6 h-6" />
           <span className="text-xs mt-1">Home</span>
         </Link>
-        <Link href="/categories" className="flex flex-col items-center text-gray-400">
+        <Link href="/category" className="flex flex-col items-center text-gray-400">
           <LayoutGrid className="w-6 h-6" />
           <span className="text-xs mt-1">Categories</span>
         </Link>

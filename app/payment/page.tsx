@@ -63,19 +63,19 @@ const paymentMethods = {
 };
 
 const PaymentMethodItem = ({ title, subtitle, icon }: { title: string, subtitle?: string, icon?: string }) => (
-  <div className="flex items-center justify-between py-4 border-b last:border-b-0">
+  <div className="flex items-center justify-between py-4 border-b border-border-color last:border-b-0">
     <div className="flex items-center gap-3">
       {icon ? (
         <img src={icon} alt={title} className="w-8 h-8 object-contain" />
       ) : (
-        <CreditCard className="w-8 h-8 text-gray-600" />
+        <CreditCard className="w-8 h-8 text-text-secondary" />
       )}
       <div>
-        <h3 className="font-medium text-gray-900">{title}</h3>
-        {subtitle && <p className="text-sm text-gray-500">{subtitle}</p>}
+        <h3 className="font-medium text-text-primary">{title}</h3>
+        {subtitle && <p className="text-sm text-text-secondary">{subtitle}</p>}
       </div>
     </div>
-    <ChevronRight className="w-5 h-5 text-gray-400" />
+    <ChevronRight className="w-5 h-5 text-text-secondary" />
   </div>
 );
 
@@ -128,17 +128,17 @@ const AddCardModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
         onClick={onClose}
       />
       <div
-        className={`fixed left-0 right-0 bottom-0 bg-white rounded-t-3xl transition-transform duration-300 transform ${
+        className={`fixed left-0 right-0 bottom-0 bg-card-background rounded-t-3xl transition-transform duration-300 transform ${
           isOpen ? 'translate-y-0' : 'translate-y-full'
         }`}
         style={{ maxHeight: '90vh', overflowY: 'auto' }}
       >
         <div className="p-4">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-lg font-semibold text-gray-900">Add New Card</h2>
+            <h2 className="text-lg font-semibold text-text-primary">Add New Card</h2>
             <button 
               onClick={onClose}
-              className="text-gray-500"
+              className="text-text-secondary hover:text-text-primary"
             >
               <X className="w-6 h-6" />
             </button>
@@ -147,13 +147,13 @@ const AddCardModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Card Number */}
             <div>
-              <label className="block text-sm text-gray-600 mb-2">
+              <label className="block text-sm text-text-secondary mb-2">
                 Card Number
               </label>
               <input
                 type="text"
                 placeholder="8976 5467 XX87 0098"
-                className="w-full p-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+                className="w-full p-3 rounded-lg border border-border-color bg-card-background text-text-primary placeholder-text-secondary focus:border-nav-active focus:ring-1 focus:ring-nav-active outline-none"
                 value={cardDetails.number}
                 onChange={(e) => setCardDetails({ 
                   ...cardDetails, 
@@ -165,13 +165,13 @@ const AddCardModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
 
             {/* Card Holder Name */}
             <div>
-              <label className="block text-sm text-gray-600 mb-2">
+              <label className="block text-sm text-text-secondary mb-2">
                 Card Holder Name
               </label>
               <input
                 type="text"
                 placeholder="Smith Johnson"
-                className="w-full p-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+                className="w-full p-3 rounded-lg border border-border-color bg-card-background text-text-primary placeholder-text-secondary focus:border-nav-active focus:ring-1 focus:ring-nav-active outline-none"
                 value={cardDetails.name}
                 onChange={(e) => setCardDetails({ ...cardDetails, name: e.target.value })}
               />
@@ -180,13 +180,13 @@ const AddCardModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
             {/* Expiry Date and CVV */}
             <div className="flex gap-4">
               <div className="flex-1">
-                <label className="block text-sm text-gray-600 mb-2">
+                <label className="block text-sm text-text-secondary mb-2">
                   Expiry Date
                 </label>
                 <input
                   type="text"
                   placeholder="12/2026"
-                  className="w-full p-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+                  className="w-full p-3 rounded-lg border border-border-color bg-card-background text-text-primary placeholder-text-secondary focus:border-nav-active focus:ring-1 focus:ring-nav-active outline-none"
                   value={cardDetails.expiry}
                   onChange={(e) => setCardDetails({ 
                     ...cardDetails, 
@@ -196,14 +196,14 @@ const AddCardModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
                 />
               </div>
               <div className="flex-1">
-                <label className="block text-sm text-gray-600 mb-2">
+                <label className="block text-sm text-text-secondary mb-2">
                   CVV
                 </label>
                 <input
                   type="password"
                   placeholder="•••"
                   maxLength={3}
-                  className="w-full p-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+                  className="w-full p-3 rounded-lg border border-border-color bg-card-background text-text-primary placeholder-text-secondary focus:border-nav-active focus:ring-1 focus:ring-nav-active outline-none"
                   value={cardDetails.cvv}
                   onChange={(e) => setCardDetails({ 
                     ...cardDetails, 
@@ -216,7 +216,7 @@ const AddCardModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
             {/* Submit Button */}
             <button 
               type="submit"
-              className="w-full bg-blue-500 text-white py-4 rounded-xl font-medium mt-6"
+              className="w-full bg-nav-active text-white py-4 rounded-xl font-medium mt-6 hover:bg-nav-active/90 transition-colors"
             >
               Add Card
             </button>
@@ -239,19 +239,19 @@ export default function PaymentMethodPage() {
 
   return (
     <>
-      <main className={`min-h-screen bg-gray-50 ${isAddCardModalOpen ? 'blur-sm' : ''}`}>
+      <main className={`min-h-screen bg-background ${isAddCardModalOpen ? 'blur-sm' : ''}`}>
         {/* Header */}
-        <div className="bg-white p-4 flex items-center justify-between sticky top-0 z-10">
+        <div className="bg-card-background p-4 flex items-center justify-between sticky top-0 z-10">
           <Link href="/make-booking">
-            <ChevronLeft className="w-6 h-6 text-gray-900" />
+            <ChevronLeft className="w-6 h-6 text-text-primary" />
           </Link>
-          <h1 className="text-lg font-semibold text-gray-900">Payment Method</h1>
+          <h1 className="text-lg font-semibold text-text-primary">Payment Method</h1>
           <div className="w-6" />
         </div>
 
         {/* Debit or Credit Card Section */}
-        <div className="bg-white mt-2 p-4">
-          <h2 className="text-base font-medium text-gray-900 mb-2">Debit or Credit Card</h2>
+        <div className="bg-card-background mt-2 p-4">
+          <h2 className="text-base font-medium text-text-primary mb-2">Debit or Credit Card</h2>
           {paymentMethods.cards.map(card => (
             <div key={card.id} onClick={() => handlePaymentMethodClick(card)}>
               <PaymentMethodItem 
@@ -261,7 +261,7 @@ export default function PaymentMethodPage() {
             </div>
           ))}
           <button 
-            className="w-full mt-4 flex items-center justify-center gap-2 text-blue-500 py-3"
+            className="w-full mt-4 flex items-center justify-center gap-2 text-nav-active py-3"
             onClick={() => setIsAddCardModalOpen(true)}
           >
             <Plus className="w-5 h-5" />
@@ -270,8 +270,8 @@ export default function PaymentMethodPage() {
         </div>
 
         {/* Wallet Section */}
-        <div className="bg-white mt-2 p-4">
-          <h2 className="text-base font-medium text-gray-900 mb-2">Wallet</h2>
+        <div className="bg-card-background mt-2 p-4">
+          <h2 className="text-base font-medium text-text-primary mb-2">Wallet</h2>
           {paymentMethods.wallets.map(wallet => (
             <div key={wallet.id} onClick={() => handlePaymentMethodClick(wallet)}>
               <PaymentMethodItem 
@@ -283,8 +283,8 @@ export default function PaymentMethodPage() {
         </div>
 
         {/* UPI Section */}
-        <div className="bg-white mt-2 p-4">
-          <h2 className="text-base font-medium text-gray-900 mb-2">UPI</h2>
+        <div className="bg-card-background mt-2 p-4">
+          <h2 className="text-base font-medium text-text-primary mb-2">UPI</h2>
           {paymentMethods.upi.map(upi => (
             <div key={upi.id} onClick={() => handlePaymentMethodClick(upi)}>
               <PaymentMethodItem 
@@ -296,8 +296,8 @@ export default function PaymentMethodPage() {
         </div>
 
         {/* Pay After Service Section */}
-        <div className="bg-white mt-2 p-4">
-          <h2 className="text-base font-medium text-gray-900 mb-2">Pay After Service</h2>
+        <div className="bg-card-background mt-2 p-4">
+          <h2 className="text-base font-medium text-text-primary mb-2">Pay After Service</h2>
           {paymentMethods.other.map(method => (
             <div key={method.id} onClick={() => handlePaymentMethodClick(method)}>
               <PaymentMethodItem 

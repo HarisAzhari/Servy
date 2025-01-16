@@ -106,7 +106,7 @@ export default function BookingPage() {
           <Link href="/service-details">
             <ChevronLeft className="w-6 h-6 text-gray-900" />
           </Link>
-          <h1 className="text-lg font-semibold text-gray-900">Booking Summary</h1>
+          <h1 className="text-lg font-semibold text-gray-900">kote</h1>
           <div className="w-6" />
         </div>
 

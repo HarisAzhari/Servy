@@ -24,7 +24,7 @@ interface Service {
 const ServiceCard = ({ service }: { service: Service }) => {
   return (
     <Link href={`/service-details/${service.id}/`} className="block">
-      <div className="bg-white rounded-xl overflow-hidden mb-4 shadow-sm">
+      <div className="bg-service-card-bg rounded-xl overflow-hidden mb-4 shadow-sm">
         <img 
           src={service.image} 
           alt={service.title}
@@ -33,11 +33,11 @@ const ServiceCard = ({ service }: { service: Service }) => {
         <div className="p-4">
           <div className="flex items-center mb-2">
             {[...Array(service.rating)].map((_, i) => (
-              <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+              <Star key={i} className="w-4 h-4 fill-rating-color text-rating-color" />
             ))}
-            <span className="text-sm text-gray-700 ml-2">({service.reviews} Reviews)</span>
+            <span className="text-sm text-text-secondary ml-2">({service.reviews} Reviews)</span>
           </div>
-          <h3 className="font-medium text-lg mb-1 text-gray-900">{service.title}</h3>
+          <h3 className="font-medium text-lg mb-1 text-text-primary">{service.title}</h3>
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <img
@@ -45,18 +45,18 @@ const ServiceCard = ({ service }: { service: Service }) => {
                 alt={service.provider.name}
                 className="w-6 h-6 rounded-full"
               />
-              <span className="text-sm text-gray-700">{service.provider.name}</span>
+              <span className="text-sm text-text-secondary">{service.provider.name}</span>
             </div>
           </div>
           <div className="flex items-center justify-between">
             <div>
-              <span className="text-lg font-semibold text-gray-900">${service.price}</span>
-              <span className="text-sm text-gray-500 line-through ml-2">
+              <span className="text-lg font-semibold text-price-color">${service.price}</span>
+              <span className="text-sm text-text-secondary line-through ml-2">
                 ${service.originalPrice}
               </span>
             </div>
             <button 
-              className="bg-blue-500 text-white px-6 py-2 rounded-lg text-sm font-medium"
+              className="bg-nav-active text-white px-6 py-2 rounded-lg text-sm font-medium"
               onClick={(e) => {
                 e.preventDefault();
                 // Add your cart logic here
@@ -98,21 +98,21 @@ export default function CategoryServicesPage({ params }: { params: Promise<{ cat
   }, [categoryName]);
 
   if (loading) {
-    return <div className="p-4">Loading...</div>;
+    return <div className="p-4 text-text-primary">Loading...</div>;
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 pb-20">
+    <main className="min-h-screen bg-background pb-20">
       {/* Header */}
-      <div className="bg-white p-4 flex items-center justify-between sticky top-0 z-10">
+      <div className="bg-card-background p-4 flex items-center justify-between sticky top-0 z-10">
         <div className="flex items-center gap-4">
           <Link href="/category">
-            <ChevronLeft className="w-6 h-6" />
+            <ChevronLeft className="w-6 h-6 text-text-primary" />
           </Link>
-          <h1 className="text-xl font-semibold">Services for {categoryName}</h1>
+          <h1 className="text-xl font-semibold text-text-primary">Services for {categoryName}</h1>
         </div>
         <button>
-          <Search className="w-6 h-6" />
+          <Search className="w-6 h-6 text-text-primary" />
         </button>
       </div>
 
@@ -123,7 +123,7 @@ export default function CategoryServicesPage({ params }: { params: Promise<{ cat
             <ServiceCard key={service.id} service={service} />
           ))
         ) : (
-          <div className="text-center py-4 text-gray-500">
+          <div className="text-center py-4 text-text-secondary">
             No services found for this category
           </div>
         )}

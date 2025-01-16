@@ -1,11 +1,10 @@
-// app/bookings/page.tsx
-
 'use client'
 
 import React from 'react';
 import { ChevronRight, Clock } from 'lucide-react';
 import Link from 'next/link';
 import BottomNavigation from '../../components/navigation/BottomNavigation';
+import { useTheme } from '@/context/ThemeContext';
 
 interface Booking {
   id: string;
@@ -47,16 +46,18 @@ const bookings: Booking[] = [
 ];
 
 const StatusBadge = ({ status }: { status: Booking['status'] }) => {
+  const { isDarkMode } = useTheme();
+  
   const getStatusStyle = (status: Booking['status']) => {
     switch (status) {
       case 'JOB COMPLETED':
-        return 'text-blue-500 font-normal';  // Changed to normal weight
+        return `${isDarkMode ? 'text-blue-400' : 'text-blue-500'} font-normal`;
       case 'BOOKING CANCELLED':
-        return 'text-red-500 uppercase font-normal'; // Changed to normal weight
+        return `${isDarkMode ? 'text-red-400' : 'text-red-500'} uppercase font-normal`;
       case 'PENDING':
-        return 'text-yellow-500 font-normal';
+        return `${isDarkMode ? 'text-yellow-400' : 'text-yellow-500'} font-normal`;
       default:
-        return 'text-gray-500 font-normal';
+        return `${isDarkMode ? 'text-gray-400' : 'text-gray-500'} font-normal`;
     }
   };
 
@@ -68,11 +69,15 @@ const StatusBadge = ({ status }: { status: Booking['status'] }) => {
 };
 
 export default function BookingsPage() {
+  const { isDarkMode } = useTheme();
+
   return (
-    <main className="min-h-screen bg-white">
+    <main className={`min-h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-white'}`}>
       {/* Header */}
       <div className="p-4">
-        <h1 className="text-[22px] font-semibold text-gray-900">My Bookings</h1>
+        <h1 className={`text-[22px] font-semibold ${
+          isDarkMode ? 'text-gray-100' : 'text-gray-900'
+        }`}>My Bookings</h1>
       </div>
 
       {/* Bookings List */}
@@ -80,24 +85,32 @@ export default function BookingsPage() {
         {bookings.map((booking, index) => (
           <div key={booking.id} className="mb-6">
             {/* Service Type */}
-            <h2 className="text-[17px] font-medium text-gray-900 mb-2">
+            <h2 className={`text-[17px] font-medium mb-2 ${
+              isDarkMode ? 'text-gray-200' : 'text-gray-900'
+            }`}>
               {booking.serviceType}
             </h2>
             
             {/* Booking Card */}
             <Link href={`/bookings/booking-details`}>
-              <div className="flex items-center justify-between">
+              <div className={`flex items-center justify-between ${
+                isDarkMode ? 'bg-gray-800' : ''
+              } rounded-lg p-4`}>
                 <div className="flex-1">
                   {/* Status */}
                   <StatusBadge status={booking.status} />
                   
                   {/* Service Name */}
-                  <h3 className="text-[15px] font-medium text-gray-900 mt-1">
+                  <h3 className={`text-[15px] font-medium mt-1 ${
+                    isDarkMode ? 'text-gray-100' : 'text-gray-900'
+                  }`}>
                     {booking.serviceName}
                   </h3>
                   
                   {/* Date & Time */}
-                  <p className="text-[13px] text-gray-500 mt-0.5">
+                  <p className={`text-[13px] mt-0.5 ${
+                    isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                  }`}>
                     {booking.date} at {booking.time}
                   </p>
                   
@@ -105,22 +118,30 @@ export default function BookingsPage() {
                   {booking.amount && (
                     <div className="flex items-center mt-2">
                       <div className="flex items-center">
-                        <span className="text-[13px] text-gray-900">Amount Paid</span>
-                        <span className="text-[13px] text-gray-900 ml-1">${booking.amount}</span>
+                        <span className={`text-[13px] ${
+                          isDarkMode ? 'text-gray-300' : 'text-gray-900'
+                        }`}>Amount Paid</span>
+                        <span className={`text-[13px] ml-1 ${
+                          isDarkMode ? 'text-gray-300' : 'text-gray-900'
+                        }`}>${booking.amount}</span>
                       </div>
-                      <button className="ml-auto text-[13px] text-white bg-blue-500 px-3 py-1 rounded-md">
+                      <button className="ml-auto text-[13px] text-white bg-blue-500 px-3 py-1 rounded-md hover:bg-blue-600 transition-colors">
                         Book Again
                       </button>
                     </div>
                   )}
                 </div>
-                <ChevronRight className="w-5 h-5 text-gray-400 ml-2" />
+                <ChevronRight className={`w-5 h-5 ${
+                  isDarkMode ? 'text-gray-400' : 'text-gray-400'
+                } ml-2`} />
               </div>
             </Link>
 
             {/* Divider */}
             {index < bookings.length - 1 && (
-              <div className="border-b border-gray-100 mt-4" />
+              <div className={`border-b mt-4 ${
+                isDarkMode ? 'border-gray-700' : 'border-gray-100'
+              }`} />
             )}
           </div>
         ))}

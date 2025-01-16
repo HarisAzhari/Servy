@@ -5,17 +5,110 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --card-background: #ffffff;
+  --card-foreground: #171717;
+  --border-color: #e5e7eb;
+  --text-primary: #171717;
+  --text-secondary: #4b5563;
+  --category-bg: #ffffff;
+  --service-card-bg: #ffffff;
+  --rating-color: #fbbf24;
+  --price-color: #3b82f6;
+  --nav-bg: #ffffff;
+  --nav-text: #4b5563;
+  --nav-active: #3b82f6;
+  --search-bg: #f3f4f6;
+  --search-text: #171717;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+[data-theme='dark'] {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --card-background: #171717;
+  --card-foreground: #ededed;
+  --border-color: #2e2e2e;
+  --text-primary: #ffffff;
+  --text-secondary: #9ca3af;
+  --category-bg: #171717;
+  --service-card-bg: #1f1f1f;
+  --rating-color: #fbbf24;
+  --price-color: #60a5fa;
+  --nav-bg: #171717;
+  --nav-text: #9ca3af;
+  --nav-active: #60a5fa;
+  --search-bg: #262626;
+  --search-text: #ededed;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Category cards */
+.category-card {
+  background-color: var(--category-bg);
+  color: var(--text-primary);
+}
+
+/* Service cards */
+.service-card {
+  background-color: var(--service-card-bg);
+  color: var(--text-primary);
+}
+
+/* Navigation */
+.bottom-nav {
+  background-color: var(--nav-bg);
+  border-color: var(--border-color);
+}
+
+.bottom-nav a {
+  color: var(--nav-text);
+}
+
+.bottom-nav a.active {
+  color: var(--nav-active);
+}
+
+/* Search bar */
+.search-input {
+  background-color: var(--search-bg);
+  color: var(--search-text);
+}
+
+/* Service details */
+.service-details {
+  background-color: var(--card-background);
+  color: var(--text-primary);
+}
+
+.service-price {
+  color: var(--price-color);
+}
+
+.service-rating {
+  color: var(--rating-color);
+}
+
+/* Common elements */
+.bg-white {
+  background-color: var(--card-background);
+}
+
+.text-gray-600 {
+  color: var(--text-secondary);
+}
+
+.text-gray-400 {
+  color: var(--text-secondary);
+}
+
+.border-t {
+  border-color: var(--border-color);
+}
+
+.hover\:bg-gray-50:hover {
+  background-color: var(--card-background);
 }
