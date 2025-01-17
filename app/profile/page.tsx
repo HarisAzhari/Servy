@@ -6,36 +6,55 @@ import { ChevronRight, Edit2, Lock, BookOpen, MapPin, Eye, Shield, FileText, Log
 import Image from 'next/image';
 import { useTheme } from '@/context/ThemeContext';
 import BottomNavigation from '../../components/navigation/BottomNavigation';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function ProfilePage() {
   const { isDarkMode, toggleDarkMode } = useTheme();
+  const { user, loading, logout } = useAuth();
+
+  if (loading) {
+    return (
+      <div className={`min-h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-white'} p-4 flex items-center justify-center`}>
+        <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   return (
     <main className={`min-h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-white'} pb-20`}>
-      <div className="p-4">
-        <h1 className={`text-xl font-bold mb-6 ${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>
-          My Profile
-        </h1>
+    <div className="p-4">
+      <h1 className={`text-xl font-bold mb-6 ${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>
+        My Profile
+      </h1>
 
         {/* Profile Image and Name */}
         <div className="flex flex-col items-center mb-8">
           <div className="relative mb-3">
             <div className="w-24 h-24 rounded-full overflow-hidden relative">
-              <Image
-                src="/api/placeholder/96/96"
-                alt="Profile"
-                width={96}
-                height={96}
-                className="object-cover"
-              />
+              {user?.profile_image ? (
+                <Image
+                  src={user.profile_image}
+                  alt="Profile"
+                  width={96}
+                  height={96}
+                  className="object-cover"
+                />
+              ) : (
+                <div className={`w-full h-full flex items-center justify-center ${isDarkMode ? 'bg-gray-800' : 'bg-gray-100'}`}>
+                  <span className="text-2xl font-semibold">{user?.name?.charAt(0)}</span>
+                </div>
+              )}
             </div>
             <div className="absolute bottom-0 right-0 bg-blue-500 p-2 rounded-full">
               <Eye className="w-4 h-4 text-white" />
             </div>
           </div>
           <h2 className={`text-lg font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>
-            Smith Johnson
+            {user?.name}
           </h2>
+          <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+            {user?.email}
+          </p>
         </div>
 
         {/* Menu Items */}
@@ -43,9 +62,7 @@ export default function ProfilePage() {
           <Link 
             href="/profile/edit" 
             className={`flex items-center justify-between p-3 ${
-              isDarkMode 
-                ? 'hover:bg-gray-800' 
-                : 'hover:bg-gray-50'
+              isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-50'
             }`}
           >
             <div className="flex items-center">
@@ -86,7 +103,7 @@ export default function ProfilePage() {
           </Link>
 
           <Link 
-            href="/addresses" 
+            href="/address" 
             className={`flex items-center justify-between p-3 ${
               isDarkMode 
                 ? 'hover:bg-gray-800' 
@@ -159,11 +176,12 @@ export default function ProfilePage() {
             <ChevronRight className={`w-5 h-5 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`} />
           </Link>
 
-          <button className={`flex items-center text-red-500 p-3 w-full ${
-            isDarkMode 
-              ? 'hover:bg-gray-800' 
-              : 'hover:bg-gray-50'
-          }`}>
+          <button 
+            onClick={logout}
+            className={`flex items-center text-red-500 p-3 w-full ${
+              isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-50'
+            }`}
+          >
             <LogOut className="w-5 h-5 mr-3" />
             <span>Logout</span>
           </button>
