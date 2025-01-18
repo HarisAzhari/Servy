@@ -1,16 +1,57 @@
 'use client'
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { ChevronRight, Edit2, Lock, BookOpen, MapPin, Eye, Shield, FileText, LogOut } from 'lucide-react';
 import Image from 'next/image';
 import { useTheme } from '@/context/ThemeContext';
 import BottomNavigation from '../../components/navigation/BottomNavigation';
-import { useAuth } from '@/hooks/useAuth';
 
 export default function ProfilePage() {
   const { isDarkMode, toggleDarkMode } = useTheme();
-  const { user, loading, logout } = useAuth();
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
+  interface User {
+    id: string;
+    name: string | null;
+    email: string | null;
+    mobile: string | null;
+  }
+
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    // Get user data from localStorage
+    const userId = localStorage.getItem('user_id');
+    const userName = localStorage.getItem('user_name');
+    const userEmail = localStorage.getItem('user_email');
+    const userMobile = localStorage.getItem('user_mobile');
+
+    if (!userId) {
+      router.push('/'); // Redirect to login if no user data
+      return;
+    }
+
+    setUser({
+      id: userId,
+      name: userName,
+      email: userEmail,
+      mobile: userMobile
+    });
+    setLoading(false);
+  }, []);
+
+  const handleLogout = () => {
+    // Clear all user data from localStorage
+    localStorage.removeItem('user_id');
+    localStorage.removeItem('user_name');
+    localStorage.removeItem('user_email');
+    localStorage.removeItem('user_mobile');
+    
+    // Redirect to login page
+    router.push('/');
+  };
 
   if (loading) {
     return (
@@ -22,28 +63,18 @@ export default function ProfilePage() {
 
   return (
     <main className={`min-h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-white'} pb-20`}>
-    <div className="p-4">
-      <h1 className={`text-xl font-bold mb-6 ${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>
-        My Profile
-      </h1>
+      <div className="p-4">
+        <h1 className={`text-xl font-bold mb-6 ${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>
+          My Profile
+        </h1>
 
         {/* Profile Image and Name */}
         <div className="flex flex-col items-center mb-8">
           <div className="relative mb-3">
             <div className="w-24 h-24 rounded-full overflow-hidden relative">
-              {user?.profile_image ? (
-                <Image
-                  src={user.profile_image}
-                  alt="Profile"
-                  width={96}
-                  height={96}
-                  className="object-cover"
-                />
-              ) : (
-                <div className={`w-full h-full flex items-center justify-center ${isDarkMode ? 'bg-gray-800' : 'bg-gray-100'}`}>
-                  <span className="text-2xl font-semibold">{user?.name?.charAt(0)}</span>
-                </div>
-              )}
+              <div className={`w-full h-full flex items-center justify-center ${isDarkMode ? 'bg-gray-800' : 'bg-gray-100'}`}>
+                <span className="text-2xl font-semibold">{user?.name?.charAt(0)}</span>
+              </div>
             </div>
             <div className="absolute bottom-0 right-0 bg-blue-500 p-2 rounded-full">
               <Eye className="w-4 h-4 text-white" />
@@ -75,9 +106,7 @@ export default function ProfilePage() {
           <Link 
             href="/change-password" 
             className={`flex items-center justify-between p-3 ${
-              isDarkMode 
-                ? 'hover:bg-gray-800' 
-                : 'hover:bg-gray-50'
+              isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-50'
             }`}
           >
             <div className="flex items-center">
@@ -90,9 +119,7 @@ export default function ProfilePage() {
           <Link 
             href="/bookings" 
             className={`flex items-center justify-between p-3 ${
-              isDarkMode 
-                ? 'hover:bg-gray-800' 
-                : 'hover:bg-gray-50'
+              isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-50'
             }`}
           >
             <div className="flex items-center">
@@ -105,9 +132,7 @@ export default function ProfilePage() {
           <Link 
             href="/address" 
             className={`flex items-center justify-between p-3 ${
-              isDarkMode 
-                ? 'hover:bg-gray-800' 
-                : 'hover:bg-gray-50'
+              isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-50'
             }`}
           >
             <div className="flex items-center">
@@ -118,9 +143,7 @@ export default function ProfilePage() {
           </Link>
 
           <div className={`flex items-center justify-between p-3 ${
-            isDarkMode 
-              ? 'hover:bg-gray-800' 
-              : 'hover:bg-gray-50'
+            isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-50'
           }`}>
             <div className="flex items-center">
               <Eye className={`w-5 h-5 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mr-3`} />
@@ -134,9 +157,7 @@ export default function ProfilePage() {
                 className="sr-only peer" 
               />
               <div 
-                className={`w-11 h-6 ${
-                  isDarkMode ? 'bg-blue-500' : 'bg-gray-200'
-                } rounded-full peer 
+                className={`w-11 h-6 ${isDarkMode ? 'bg-blue-500' : 'bg-gray-200'} rounded-full peer 
                   after:content-[''] after:absolute after:top-[2px] after:left-[2px] 
                   after:bg-white after:border-gray-300 after:border after:rounded-full 
                   after:h-5 after:w-5 after:transition-all
@@ -149,9 +170,7 @@ export default function ProfilePage() {
           <Link 
             href="/privacy" 
             className={`flex items-center justify-between p-3 ${
-              isDarkMode 
-                ? 'hover:bg-gray-800' 
-                : 'hover:bg-gray-50'
+              isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-50'
             }`}
           >
             <div className="flex items-center">
@@ -164,9 +183,7 @@ export default function ProfilePage() {
           <Link 
             href="/terms" 
             className={`flex items-center justify-between p-3 ${
-              isDarkMode 
-                ? 'hover:bg-gray-800' 
-                : 'hover:bg-gray-50'
+              isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-50'
             }`}
           >
             <div className="flex items-center">
@@ -177,7 +194,7 @@ export default function ProfilePage() {
           </Link>
 
           <button 
-            onClick={logout}
+            onClick={handleLogout}
             className={`flex items-center text-red-500 p-3 w-full ${
               isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-50'
             }`}

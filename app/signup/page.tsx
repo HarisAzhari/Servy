@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Eye, EyeOff } from 'lucide-react';
-import { api } from '@/lib/api';
 
 export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -14,7 +13,7 @@ export default function SignupPage() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    phone: '',
+    mobile: '', // Changed from phone to mobile to match backend
     password: '',
     confirmPassword: ''
   });
@@ -40,18 +39,29 @@ export default function SignupPage() {
 
     try {
       setLoading(true);
-      const response = await api.register({
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
-        password: formData.password
+      
+      const response = await fetch('http://localhost:5000/api/user/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          mobile: formData.mobile, // Changed to match backend
+          password: formData.password
+        })
       });
 
-      // Store the token
-      localStorage.setItem('token', response.access_token);
-      localStorage.setItem('user_type', response.user_type);
-      localStorage.setItem('user_id', response.user_id.toString());
+      const data = await response.json();
 
+      if (!response.ok) {
+        throw new Error(data.error || 'Registration failed');
+      }
+
+      // Store the user ID
+      localStorage.setItem('user_id', data.user_id.toString());
+      
       // Redirect to create account success page
       router.push('/create-account');
     } catch (err) {
@@ -113,8 +123,8 @@ export default function SignupPage() {
         <div>
           <input
             type="tel"
-            name="phone"
-            value={formData.phone}
+            name="mobile"
+            value={formData.mobile}
             onChange={handleChange}
             placeholder="Mobile Number"
             className="w-full p-4 border border-gray-300 rounded-lg"

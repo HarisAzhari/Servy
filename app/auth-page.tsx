@@ -3,7 +3,6 @@
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
-import { api } from '@/lib/api';
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -29,15 +28,28 @@ const LoginPage = () => {
 
     try {
       setLoading(true);
-      const response = await api.login({
-        username: formData.email,
-        password: formData.password
+      const response = await fetch('http://localhost:5000/api/user/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password
+        })
       });
 
-      // Store the token
-      localStorage.setItem('token', response.access_token);
-      localStorage.setItem('user_type', response.user_type);
-      localStorage.setItem('user_id', response.user_id.toString());
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Login failed');
+      }
+
+      // Store user data
+      localStorage.setItem('user_id', data.user_id.toString());
+      localStorage.setItem('user_name', data.name);
+      localStorage.setItem('user_email', data.email);
+      localStorage.setItem('user_mobile', data.mobile);
 
       // Redirect to home page
       router.push('/home');
