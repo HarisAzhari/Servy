@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ChevronLeft, Star, Phone, MessageSquare, Map, Share2, X } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
+import { useSearchParams } from 'next/navigation';
 
 // Define default time slots
 const DEFAULT_TIME_SLOTS = [
@@ -39,6 +40,8 @@ interface TimeSlot {
 export default function ServiceDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
   const { isDarkMode } = useTheme();
+  const searchParams = useSearchParams(); // Move here
+  const status = searchParams.get('status'); // Move here
   const [service, setService] = useState<Service | null>(null);
   const [loading, setLoading] = useState(true);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
@@ -296,6 +299,7 @@ const handleModalClose = () => {
     );
   }
 
+  
   return (
     <>
       <main className={`min-h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-white'} pb-24 ${isBookingModalOpen ? 'blur-sm' : ''}`}>
@@ -387,32 +391,37 @@ const handleModalClose = () => {
         </div>
 
         {/* Action Buttons */}
-        <div className={`fixed bottom-0 left-0 right-0 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-t p-4 flex items-center justify-between`}>
-          <div className="flex-1 flex items-center justify-around">
-            <button className="flex flex-col items-center">
-              <Phone className="w-6 h-6 text-blue-500" />
-              <span className={`text-xs mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Call</span>
-            </button>
-            <button className="flex flex-col items-center">
-              <MessageSquare className="w-6 h-6 text-blue-500" />
-              <span className={`text-xs mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Chat</span>
-            </button>
-            <button className="flex flex-col items-center">
-              <Map className="w-6 h-6 text-blue-500" />
-              <span className={`text-xs mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Map</span>
-            </button>
-            <button className="flex flex-col items-center">
-              <Share2 className="w-6 h-6 text-blue-500" />
-              <span className={`text-xs mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Share</span>
-            </button>
-          </div>
-          <button 
-  onClick={handleModalOpen}  // Changed from setIsBookingModalOpen(true)
-  className="bg-blue-500 text-white px-8 py-3 rounded-lg ml-4 font-medium hover:bg-blue-600 transition-colors"
-          >
-            Book Service
-          </button>
-        </div>
+<div className={`fixed bottom-0 left-0 right-0 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-t p-4 flex items-center justify-between`}>
+  <div className="flex-1 flex items-center justify-around">
+    <button className="flex flex-col items-center">
+      <Phone className="w-6 h-6 text-blue-500" />
+      <span className={`text-xs mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Call</span>
+    </button>
+    <button className="flex flex-col items-center">
+      <MessageSquare className="w-6 h-6 text-blue-500" />
+      <span className={`text-xs mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Chat</span>
+    </button>
+    <button className="flex flex-col items-center">
+      <Map className="w-6 h-6 text-blue-500" />
+      <span className={`text-xs mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Map</span>
+    </button>
+    <button className="flex flex-col items-center">
+      <Share2 className="w-6 h-6 text-blue-500" />
+      <span className={`text-xs mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Share</span>
+    </button>
+  </div>
+  <button 
+    onClick={status === 'pending' ? undefined : handleModalOpen}
+    disabled={status === 'pending'}
+    className={`${
+      status === 'pending'
+        ? 'bg-yellow-500 opacity-75 cursor-not-allowed'
+        : 'bg-blue-500 hover:bg-blue-600'
+    } text-white px-8 py-3 rounded-lg ml-4 font-medium transition-colors`}
+  >
+    {status === 'pending' ? 'Pending' : 'Book Service'}
+  </button>
+</div>
       </main>
 
       {/* Booking Modal */}

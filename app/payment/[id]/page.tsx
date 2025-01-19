@@ -1,11 +1,19 @@
-// app/payment/page.tsx
-
 'use client'
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ChevronLeft, ChevronRight, Plus, CreditCard, Wallet, X } from 'lucide-react';
+
+interface Booking {
+  id: number;
+  service_title: string;
+  provider_name: string;
+  booking_date: string;
+  booking_time: string;
+  total_amount: number;
+  status: string;
+}
 
 interface PaymentOption {
   id: string;
@@ -24,34 +32,6 @@ const paymentMethods = {
       subtitle: '4547 **** **** MG58'
     }
   ],
-  wallets: [
-    {
-      id: '2',
-      type: 'wallet',
-      title: 'Paytm',
-      icon: '/paytm.png'
-    },
-    {
-      id: '3',
-      type: 'wallet',
-      title: 'Amazon Pay',
-      icon: '/amazon-pay.png'
-    }
-  ],
-  upi: [
-    {
-      id: '4',
-      type: 'upi',
-      title: 'Paytm UPI',
-      icon: '/paytm.png'
-    },
-    {
-      id: '5',
-      type: 'upi',
-      title: 'Google Pay',
-      icon: '/gpay.png'
-    }
-  ],
   other: [
     {
       id: '6',
@@ -63,19 +43,19 @@ const paymentMethods = {
 };
 
 const PaymentMethodItem = ({ title, subtitle, icon }: { title: string, subtitle?: string, icon?: string }) => (
-  <div className="flex items-center justify-between py-4 border-b border-border-color last:border-b-0">
+  <div className="flex items-center justify-between py-4 border-b border-gray-200 last:border-b-0">
     <div className="flex items-center gap-3">
       {icon ? (
         <img src={icon} alt={title} className="w-8 h-8 object-contain" />
       ) : (
-        <CreditCard className="w-8 h-8 text-text-secondary" />
+        <CreditCard className="w-8 h-8 text-gray-500" />
       )}
       <div>
-        <h3 className="font-medium text-text-primary">{title}</h3>
-        {subtitle && <p className="text-sm text-text-secondary">{subtitle}</p>}
+        <h3 className="font-medium text-gray-900">{title}</h3>
+        {subtitle && <p className="text-sm text-gray-500">{subtitle}</p>}
       </div>
     </div>
-    <ChevronRight className="w-5 h-5 text-text-secondary" />
+    <ChevronRight className="w-5 h-5 text-gray-400" />
   </div>
 );
 
@@ -89,11 +69,9 @@ const AddCardModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Add card logic here
     onClose();
   };
 
-  // Format card number with spaces
   const formatCardNumber = (value: string) => {
     const cleaned = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
     const matches = cleaned.match(/\d{4,16}/g);
@@ -110,7 +88,6 @@ const AddCardModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
     return cleaned;
   };
 
-  // Format expiry date
   const formatExpiry = (value: string) => {
     const cleaned = value.replace(/[^0-9]/g, '');
     if (cleaned.length >= 4) {
@@ -128,32 +105,28 @@ const AddCardModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
         onClick={onClose}
       />
       <div
-        className={`fixed left-0 right-0 bottom-0 bg-card-background rounded-t-3xl transition-transform duration-300 transform ${
+        className={`fixed left-0 right-0 bottom-0 bg-white rounded-t-3xl transition-transform duration-300 transform ${
           isOpen ? 'translate-y-0' : 'translate-y-full'
         }`}
         style={{ maxHeight: '90vh', overflowY: 'auto' }}
       >
         <div className="p-4">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-lg font-semibold text-text-primary">Add New Card</h2>
-            <button 
-              onClick={onClose}
-              className="text-text-secondary hover:text-text-primary"
-            >
+            <h2 className="text-lg font-semibold text-gray-900">Add New Card</h2>
+            <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
               <X className="w-6 h-6" />
             </button>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Card Number */}
             <div>
-              <label className="block text-sm text-text-secondary mb-2">
+              <label className="block text-sm text-gray-600 mb-2">
                 Card Number
               </label>
               <input
                 type="text"
                 placeholder="8976 5467 XX87 0098"
-                className="w-full p-3 rounded-lg border border-border-color bg-card-background text-text-primary placeholder-text-secondary focus:border-nav-active focus:ring-1 focus:ring-nav-active outline-none"
+                className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none"
                 value={cardDetails.number}
                 onChange={(e) => setCardDetails({ 
                   ...cardDetails, 
@@ -163,30 +136,28 @@ const AddCardModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
               />
             </div>
 
-            {/* Card Holder Name */}
             <div>
-              <label className="block text-sm text-text-secondary mb-2">
+              <label className="block text-sm text-gray-600 mb-2">
                 Card Holder Name
               </label>
               <input
                 type="text"
                 placeholder="Smith Johnson"
-                className="w-full p-3 rounded-lg border border-border-color bg-card-background text-text-primary placeholder-text-secondary focus:border-nav-active focus:ring-1 focus:ring-nav-active outline-none"
+                className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none"
                 value={cardDetails.name}
                 onChange={(e) => setCardDetails({ ...cardDetails, name: e.target.value })}
               />
             </div>
 
-            {/* Expiry Date and CVV */}
             <div className="flex gap-4">
               <div className="flex-1">
-                <label className="block text-sm text-text-secondary mb-2">
+                <label className="block text-sm text-gray-600 mb-2">
                   Expiry Date
                 </label>
                 <input
                   type="text"
                   placeholder="12/2026"
-                  className="w-full p-3 rounded-lg border border-border-color bg-card-background text-text-primary placeholder-text-secondary focus:border-nav-active focus:ring-1 focus:ring-nav-active outline-none"
+                  className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none"
                   value={cardDetails.expiry}
                   onChange={(e) => setCardDetails({ 
                     ...cardDetails, 
@@ -196,14 +167,14 @@ const AddCardModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
                 />
               </div>
               <div className="flex-1">
-                <label className="block text-sm text-text-secondary mb-2">
+                <label className="block text-sm text-gray-600 mb-2">
                   CVV
                 </label>
                 <input
                   type="password"
                   placeholder="•••"
                   maxLength={3}
-                  className="w-full p-3 rounded-lg border border-border-color bg-card-background text-text-primary placeholder-text-secondary focus:border-nav-active focus:ring-1 focus:ring-nav-active outline-none"
+                  className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none"
                   value={cardDetails.cvv}
                   onChange={(e) => setCardDetails({ 
                     ...cardDetails, 
@@ -213,10 +184,9 @@ const AddCardModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
               </div>
             </div>
 
-            {/* Submit Button */}
             <button 
               type="submit"
-              className="w-full bg-nav-active text-white py-4 rounded-xl font-medium mt-6 hover:bg-nav-active/90 transition-colors"
+              className="w-full bg-blue-500 text-white py-4 rounded-xl font-medium mt-6 hover:bg-blue-600 transition-colors"
             >
               Add Card
             </button>
@@ -227,33 +197,94 @@ const AddCardModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
   );
 };
 
-export default function PaymentMethodPage() {
+export default function PaymentMethodPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
   const [isAddCardModalOpen, setIsAddCardModalOpen] = useState(false);
+  const [booking, setBooking] = useState<Booking | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const handlePaymentMethodClick = (method: PaymentOption) => {
-    if (method.type === 'card' || method.type === 'cash') {
-      router.push('/make-booking/success');
+  const { id } = React.use(params);
+
+  useEffect(() => {
+    const fetchBooking = async () => {
+      try {
+        const response = await fetch(`http://localhost:5000/api/booking/${id}`);
+        if (!response.ok) throw new Error('Failed to fetch booking');
+        const data = await response.json();
+        setBooking(data.booking);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBooking();
+  }, [id]);
+
+  const handlePaymentMethodClick = async (method: PaymentOption) => {
+    if (booking && (method.type === 'card' || method.type === 'cash')) {
+      try {
+        const response = await fetch(`http://localhost:5000/api/booking/${booking.id}/status`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            status: 'paid_deposit',  // Changed from 'paid_deposit' to 'approved'
+            payment_method: method.type
+          })
+        });
+  
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Failed to update booking status');
+        }
+        
+        // If successful, navigate to success page
+        router.push(`/bookings/success/${booking.id}`);
+      } catch (error) {
+        console.error('Error updating booking status:', error);
+      }
     }
   };
 
+  if (loading || !booking) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
   return (
     <>
-      <main className={`min-h-screen bg-background ${isAddCardModalOpen ? 'blur-sm' : ''}`}>
+      <main className={`min-h-screen bg-gray-50 ${isAddCardModalOpen ? 'blur-sm' : ''}`}>
         {/* Header */}
-        <div className="bg-card-background p-4 flex items-center justify-between sticky top-0 z-10">
-          <Link href="/make-booking">
-            <ChevronLeft className="w-6 h-6 text-text-primary" />
-          </Link>
-          <h1 className="text-lg font-semibold text-text-primary">Payment Method</h1>
+        <div className="bg-white p-4 flex items-center justify-between sticky top-0 z-10">
+          <button onClick={() => router.back()}>
+            <ChevronLeft className="w-6 h-6 text-gray-900" />
+          </button>
+          <h1 className="text-lg font-semibold text-gray-900">Payment Method</h1>
           <div className="w-6" />
         </div>
 
+        {/* Payment Amount */}
+        <div className="bg-white p-4 mt-2">
+          <h2 className="text-lg font-medium text-gray-900 mb-2">Amount to Pay (Deposit)</h2>
+          <p className="text-2xl font-semibold text-blue-500">
+            RM{(booking.total_amount / 2).toFixed(2)}
+          </p>
+          <p className="text-sm text-gray-500">
+            50% deposit for {booking.service_title}
+          </p>
+        </div>
+
         {/* Debit or Credit Card Section */}
-        <div className="bg-card-background mt-2 p-4">
-          <h2 className="text-base font-medium text-text-primary mb-2">Debit or Credit Card</h2>
+        <div className="bg-white mt-2 p-4">
+          <h2 className="text-base font-medium text-gray-900 mb-2">Debit or Credit Card</h2>
           {paymentMethods.cards.map(card => (
-            <div key={card.id} onClick={() => handlePaymentMethodClick(card)}>
+            <div key={card.id} onClick={() => handlePaymentMethodClick(card)} className="cursor-pointer">
               <PaymentMethodItem 
                 title={card.title}
                 subtitle={card.subtitle}
@@ -261,7 +292,7 @@ export default function PaymentMethodPage() {
             </div>
           ))}
           <button 
-            className="w-full mt-4 flex items-center justify-center gap-2 text-nav-active py-3"
+            className="w-full mt-4 flex items-center justify-center gap-2 text-blue-500 py-3"
             onClick={() => setIsAddCardModalOpen(true)}
           >
             <Plus className="w-5 h-5" />
@@ -269,37 +300,15 @@ export default function PaymentMethodPage() {
           </button>
         </div>
 
-        {/* Wallet Section */}
-        <div className="bg-card-background mt-2 p-4">
-          <h2 className="text-base font-medium text-text-primary mb-2">Wallet</h2>
-          {paymentMethods.wallets.map(wallet => (
-            <div key={wallet.id} onClick={() => handlePaymentMethodClick(wallet)}>
-              <PaymentMethodItem 
-                title={wallet.title}
-                icon={wallet.icon}
-              />
-            </div>
-          ))}
-        </div>
-
-        {/* UPI Section */}
-        <div className="bg-card-background mt-2 p-4">
-          <h2 className="text-base font-medium text-text-primary mb-2">UPI</h2>
-          {paymentMethods.upi.map(upi => (
-            <div key={upi.id} onClick={() => handlePaymentMethodClick(upi)}>
-              <PaymentMethodItem 
-                title={upi.title}
-                icon={upi.icon}
-              />
-            </div>
-          ))}
-        </div>
-
         {/* Pay After Service Section */}
-        <div className="bg-card-background mt-2 p-4">
-          <h2 className="text-base font-medium text-text-primary mb-2">Pay After Service</h2>
+        <div className="bg-white mt-2 p-4">
+          <h2 className="text-base font-medium text-gray-900 mb-2">Pay After Service</h2>
           {paymentMethods.other.map(method => (
-            <div key={method.id} onClick={() => handlePaymentMethodClick(method)}>
+            <div 
+              key={method.id} 
+              onClick={() => handlePaymentMethodClick(method)}
+              className="cursor-pointer"
+            >
               <PaymentMethodItem 
                 title={method.title}
                 icon={method.icon}
