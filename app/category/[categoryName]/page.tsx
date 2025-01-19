@@ -16,7 +16,7 @@ interface Service {
   provider_name: string;
   provider_photo: string;
   service_image: string;
-  service_areas: string[] | string; // Add this line
+  service_areas: string[] | string;
   category: string;
   custom_category: string;
   category_display: string;
@@ -63,20 +63,17 @@ export const ServiceCard = ({
   return (
     <Link href={`/service-details/${service.id}/`} className="block relative">
       <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden group mb-3`}>
-        {/* Image Container with Favorite Button */}
         <div className="relative w-full h-40">
           <img 
             src={service.service_image || '/api/placeholder/400/300'} 
             alt={service.service_title} 
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
           />
-          {/* Category Badge */}
           <div className={`absolute top-2 left-2 px-2 py-0.5 rounded-full text-xs font-medium
             ${isDarkMode ? 'bg-gray-800/90' : 'bg-white/90'} 
             ${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>
             {service.category_display || service.category}
           </div>
-          {/* Favorite Button */}
           <button
             onClick={handleToggleFavorite}
             className={`absolute top-2 right-2 z-10 p-1.5 rounded-full 
@@ -93,9 +90,7 @@ export const ServiceCard = ({
           </button>
         </div>
 
-        {/* Content Container */}
         <div className="p-3">
-          {/* Title and Price Row */}
           <div className="flex justify-between items-start gap-2 mb-2">
             <h3 className={`font-medium text-base leading-tight flex-1 
               ${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>
@@ -111,7 +106,6 @@ export const ServiceCard = ({
             </div>
           </div>
 
-          {/* Provider Info */}
           <div className="flex items-center gap-2 mb-2">
             <img
               src={service.provider_photo || '/api/placeholder/32/32'}
@@ -140,7 +134,6 @@ export const ServiceCard = ({
             </div>
           </div>
 
-          {/* Service Area */}
           {service.service_areas && (
             <div className="flex gap-1">
               <span className={`text-xs px-2 py-0.5 rounded
@@ -156,6 +149,7 @@ export const ServiceCard = ({
     </Link>
   );
 };
+
 interface PageProps {
   params: Promise<{ categoryName: string }>;
 }
@@ -167,21 +161,13 @@ export default function CategoryServicesPage({ params }: PageProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [categoryName, setCategoryName] = useState<string>('');
-  const [favorites, setFavorites] = useState<Set<number>>(new Set());
   const [showSearchInput, setShowSearchInput] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [userId, setUserId] = useState<string | null>(null);
+  const [favorites, setFavorites] = useState<Set<number>>(new Set());
 
-
-  useEffect(() => {
-    Promise.resolve(params).then((resolvedParams) => {
-      setCategoryName(resolvedParams.categoryName);
-    });
-  }, [params]);
-
-  const fetchFavorites = async () => {
-    const userId = localStorage.getItem('user_id');
-    if (!userId) return;
-  
+  // Check if a service is favorited
+  const checkFavorite = async (userId: string, serviceId: number): Promise<boolean> => {
     try {
       const response = await fetch('http://localhost:5000/api/user/favorites', {
         method: 'POST',
@@ -189,18 +175,110 @@ export default function CategoryServicesPage({ params }: PageProps) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          user_id: userId,
+          user_id: parseInt(userId),
+          service_id: serviceId
         }),
       });
-  
-      if (!response.ok) return;
-      const data = await response.json();
-      setFavorites(new Set(data.services.map((service: Service) => service.id)));
+
+      // If we get a 409, it means it's already favorited
+      if (response.status === 409) {
+        return true;
+      }
+      
+      // If it was successful, we just added it as a favorite when we just wanted to check
+      // So we need to remove it
+      if (response.ok) {
+        await fetch('http://localhost:5000/api/user/favorites', {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            user_id: parseInt(userId),
+            service_id: serviceId
+          }),
+        });
+        return false;
+      }
+
+      return false;
+    } catch (error) {
+      console.error('Error checking favorite status:', error);
+      return false;
+    }
+  };
+
+  // Initialize favorites by checking each service
+  const fetchFavorites = async (currentUserId: string, services: Service[]) => {
+    try {
+      const favoritedIds = new Set<number>();
+      
+      // Check each service if it's favorited
+      for (const service of services) {
+        const isFavorited = await checkFavorite(currentUserId, service.id);
+        if (isFavorited) {
+          favoritedIds.add(service.id);
+        }
+      }
+      
+      setFavorites(favoritedIds);
     } catch (error) {
       console.error('Error fetching favorites:', error);
     }
   };
 
+  // Handle toggling favorite status
+  const handleToggleFavorite = async (serviceId: number) => {
+    const userId = localStorage.getItem('user_id');
+    if (!userId) {
+      router.push('/login');
+      return;
+    }
+
+    try {
+      const isFavorited = favorites.has(serviceId);
+      
+      const response = await fetch('http://localhost:5000/api/user/favorites', {
+        method: isFavorited ? 'DELETE' : 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_id: parseInt(userId),
+          service_id: serviceId
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(isFavorited ? 'Failed to remove favorite' : 'Failed to add favorite');
+      }
+
+      // Update local state based on the action
+      setFavorites(prev => {
+        const newFavorites = new Set(prev);
+        if (isFavorited) {
+          newFavorites.delete(serviceId);
+        } else {
+          newFavorites.add(serviceId);
+        }
+        return newFavorites;
+      });
+
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+      setError(error instanceof Error ? error.message : 'Failed to update favorite');
+      setTimeout(() => setError(null), 3000);
+    }
+  };
+
+  // Initialize user ID and fetch services
+  useEffect(() => {
+    Promise.resolve(params).then((resolvedParams) => {
+      setCategoryName(resolvedParams.categoryName);
+    });
+  }, [params]);
+
+  // Fetch services when category changes
   useEffect(() => {
     const fetchServices = async () => {
       if (!categoryName) return;
@@ -218,7 +296,6 @@ export default function CategoryServicesPage({ params }: PageProps) {
         }
         
         const data = await response.json();
-        // Additional filter to ensure only active services are shown
         const activeServices = data.services.filter((service: Service) => service.status);
         setServices(activeServices);
       } catch (error: unknown) {
@@ -238,40 +315,17 @@ export default function CategoryServicesPage({ params }: PageProps) {
     }
   }, [categoryName]);
 
-  const handleToggleFavorite = async (serviceId: number) => {
-    const userId = localStorage.getItem('user_id');
-    if (!userId) {
-      router.push('/login');
-      return;
+  // Initialize favorites after services are loaded
+  useEffect(() => {
+    const currentUserId = localStorage.getItem('user_id');
+    setUserId(currentUserId);
+    
+    if (currentUserId && services.length > 0) {
+      fetchFavorites(currentUserId, services);
+    } else {
+      setFavorites(new Set());
     }
-
-    try {
-      const response = await fetch('http://localhost:5000/api/user/favorites', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          user_id: userId,
-          service_id: serviceId,
-        }),
-      });
-
-      if (!response.ok) throw new Error('Failed to toggle favorite');
-
-      setFavorites(prev => {
-        const newFavorites = new Set(prev);
-        if (newFavorites.has(serviceId)) {
-          newFavorites.delete(serviceId);
-        } else {
-          newFavorites.add(serviceId);
-        }
-        return newFavorites;
-      });
-    } catch (error) {
-      console.error('Error toggling favorite:', error);
-    }
-  };
+  }, [services]);
 
   const LoadingSkeleton = () => (
     <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl overflow-hidden mb-4 shadow-sm`}>
@@ -286,11 +340,7 @@ export default function CategoryServicesPage({ params }: PageProps) {
           <div className="h-4 w-32 bg-gray-300 rounded animate-pulse" />
         </div>
         <div className="h-4 w-full bg-gray-300 rounded animate-pulse mb-3" />
-        <div className="h-4 w-1/2 bg-gray-300 rounded animate-pulse mb-3" />
-        <div className="flex justify-between items-center">
-          <div className="h-6 w-16 bg-gray-300 rounded animate-pulse" />
-          <div className="h-8 w-24 bg-gray-300 rounded animate-pulse" />
-        </div>
+        <div className="h-4 w-1/2 bg-gray-300 rounded animate-pulse" />
       </div>
     </div>
   );
@@ -300,7 +350,6 @@ export default function CategoryServicesPage({ params }: PageProps) {
     service.provider_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     service.description?.toLowerCase().includes(searchQuery.toLowerCase())
   );
-
 
   return (
     <main className={`min-h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'} pb-20`}>
@@ -359,6 +408,12 @@ export default function CategoryServicesPage({ params }: PageProps) {
           </div>
         </div>
       </div>
+
+      {error && (
+        <div className={`p-4 mb-4 text-center ${isDarkMode ? 'bg-red-900 text-red-200' : 'bg-red-100 text-red-800'}`}>
+          {error}
+        </div>
+      )}
 
       <div className="p-4">
         {loading ? (

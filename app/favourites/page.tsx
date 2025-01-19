@@ -17,6 +17,7 @@ interface Service {
   provider_name: string;
   provider_photo: string;
   service_image: string;
+  service_areas: string[] | string;
   category: string;
   custom_category: string;
   category_display: string;
@@ -37,6 +38,45 @@ export default function FavoritesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const checkFavorite = async (userId: string, service: Service): Promise<boolean> => {
+    try {
+      const response = await fetch('http://localhost:5000/api/user/favorites', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_id: parseInt(userId),
+          service_id: service.id
+        }),
+      });
+
+      // If we get a 409, it means it's already favorited
+      if (response.status === 409) {
+        return true;
+      }
+      
+      // If it was successful, we need to remove it since we were just checking
+      if (response.ok) {
+        await fetch('http://localhost:5000/api/user/favorites', {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            user_id: parseInt(userId),
+            service_id: service.id
+          }),
+        });
+      }
+
+      return false;
+    } catch (error) {
+      console.error('Error checking favorite status:', error);
+      return false;
+    }
+  };
+
   const fetchFavorites = async () => {
     const userId = localStorage.getItem('user_id');
     if (!userId) {
@@ -51,28 +91,12 @@ export default function FavoritesPage() {
       if (!response.ok) throw new Error('Failed to fetch services');
       const data = await response.json();
 
-      // Then, check each service against favorites endpoint
+      // Check each service if it's favorited
       const favoritesList = [];
       for (const service of data.services) {
-        try {
-          // Check if the service is in favorites by trying to add it
-          const favoriteResponse = await fetch('http://localhost:5000/api/user/favorites', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              user_id: parseInt(userId),
-              service_id: service.id
-            }),
-          });
-
-          // If we get a 409 response, it means the service is already in favorites
-          if (favoriteResponse.status === 409) {
-            favoritesList.push(service);
-          }
-        } catch (error) {
-          // Ignore individual service check errors
+        const isFavorited = await checkFavorite(userId, service);
+        if (isFavorited) {
+          favoritesList.push({ ...service, is_favorite: true });
         }
       }
 
@@ -94,13 +118,28 @@ export default function FavoritesPage() {
     }
 
     try {
-      // Since we can't remove favorites with the current API,
-      // just update the UI optimistically
+      // In favorites page, we only need to handle removal
+      const response = await fetch('http://localhost:5000/api/user/favorites', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_id: parseInt(userId),
+          service_id: serviceId
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to remove from favorites');
+      }
+
+      // Update local state after successful removal
       setFavorites(prev => prev.filter(service => service.id !== serviceId));
     } catch (error) {
-      console.error('Error toggling favorite:', error);
-      // If there's an error, refresh the favorites list
-      fetchFavorites();
+      console.error('Error removing favorite:', error);
+      setError('Failed to remove from favorites. Please try again.');
+      setTimeout(() => setError(null), 3000);
     }
   };
 
@@ -141,16 +180,18 @@ export default function FavoritesPage() {
         </h1>
       </div>
 
+      {error && (
+        <div className={`p-4 mb-4 text-center ${isDarkMode ? 'bg-red-900 text-red-200' : 'bg-red-100 text-red-800'}`}>
+          {error}
+        </div>
+      )}
+
       <div className="p-4">
         {loading ? (
           <div className="space-y-4">
             {[1, 2, 3].map((n) => (
               <LoadingSkeleton key={n} />
             ))}
-          </div>
-        ) : error ? (
-          <div className={`text-center py-8 ${isDarkMode ? 'text-red-400' : 'text-red-500'}`}>
-            {error}
           </div>
         ) : favorites.length > 0 ? (
           favorites.map((service) => (
