@@ -12,9 +12,6 @@ interface ServiceData {
   category_display: string;
 }
 
-interface ApiResponse {
-  services: ServiceData[];
-}
 
 interface CategoryCounts {
   [key: string]: number;
