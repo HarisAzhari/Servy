@@ -208,7 +208,7 @@ export default function PaymentMethodPage({ params }: { params: Promise<{ id: st
   useEffect(() => {
     const fetchBooking = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/booking/${id}`);
+        const response = await fetch(`http://127.0.0.1:5000/api/booking/${id}`);
         if (!response.ok) throw new Error('Failed to fetch booking');
         const data = await response.json();
         setBooking(data.booking);
@@ -225,7 +225,7 @@ export default function PaymentMethodPage({ params }: { params: Promise<{ id: st
   const handlePaymentMethodClick = async (method: PaymentOption) => {
     if (booking && (method.type === 'card' || method.type === 'cash')) {
       try {
-        const response = await fetch(`http://localhost:5000/api/booking/${booking.id}/status`, {
+        const response = await fetch(`http://127.0.0.1:5000/api/booking/${booking.id}/status`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json'

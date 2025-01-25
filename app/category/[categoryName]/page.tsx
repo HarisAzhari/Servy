@@ -169,7 +169,7 @@ export default function CategoryServicesPage({ params }: PageProps) {
   // Check if a service is favorited
   const checkFavorite = async (userId: string, serviceId: number): Promise<boolean> => {
     try {
-      const response = await fetch('http://localhost:5000/api/user/favorites', {
+      const response = await fetch('http://127.0.0.1:5000/api/user/favorites', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -188,7 +188,7 @@ export default function CategoryServicesPage({ params }: PageProps) {
       // If it was successful, we just added it as a favorite when we just wanted to check
       // So we need to remove it
       if (response.ok) {
-        await fetch('http://localhost:5000/api/user/favorites', {
+        await fetch('http://127.0.0.1:5000/api/user/favorites', {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
@@ -238,7 +238,7 @@ export default function CategoryServicesPage({ params }: PageProps) {
     try {
       const isFavorited = favorites.has(serviceId);
       
-      const response = await fetch('http://localhost:5000/api/user/favorites', {
+      const response = await fetch('http://127.0.0.1:5000/api/user/favorites', {
         method: isFavorited ? 'DELETE' : 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -288,7 +288,7 @@ export default function CategoryServicesPage({ params }: PageProps) {
         setError(null);
         
         const response = await fetch(
-          `http://localhost:5000/api/services?category=${encodeURIComponent(categoryName)}&status=1`
+          `http://127.0.0.1:5000/api/services?category=${encodeURIComponent(categoryName)}&status=1`
         );
         
         if (!response.ok) {

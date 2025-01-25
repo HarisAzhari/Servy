@@ -40,7 +40,7 @@ export default function FavoritesPage() {
 
   const checkFavorite = async (userId: string, service: Service): Promise<boolean> => {
     try {
-      const response = await fetch('http://localhost:5000/api/user/favorites', {
+      const response = await fetch('http://127.0.0.1:5000/api/user/favorites', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -58,7 +58,7 @@ export default function FavoritesPage() {
       
       // If it was successful, we need to remove it since we were just checking
       if (response.ok) {
-        await fetch('http://localhost:5000/api/user/favorites', {
+        await fetch('http://127.0.0.1:5000/api/user/favorites', {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
@@ -87,7 +87,7 @@ export default function FavoritesPage() {
     try {
       setLoading(true);
       // First, fetch all services
-      const response = await fetch('http://localhost:5000/api/services');
+      const response = await fetch('http://127.0.0.1:5000/api/services');
       if (!response.ok) throw new Error('Failed to fetch services');
       const data = await response.json();
 
@@ -119,7 +119,7 @@ export default function FavoritesPage() {
 
     try {
       // In favorites page, we only need to handle removal
-      const response = await fetch('http://localhost:5000/api/user/favorites', {
+      const response = await fetch('http://127.0.0.1:5000/api/user/favorites', {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

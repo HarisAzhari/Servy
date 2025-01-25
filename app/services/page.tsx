@@ -164,7 +164,7 @@ export default function BestServicesPage() {
     if (!userId) return;
   
     try {
-      const response = await fetch('http://localhost:5000/api/user/favorites', {
+      const response = await fetch('http://127.0.0.1:5000/api/user/favorites', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -188,7 +188,7 @@ export default function BestServicesPage() {
         setLoading(true);
         setError(null);
         
-        const response = await fetch('http://localhost:5000/api/services?status=1');
+        const response = await fetch('http://127.0.0.1:5000/api/services?status=1');
         
         if (!response.ok) {
           throw new Error('Failed to fetch services');
@@ -223,7 +223,7 @@ export default function BestServicesPage() {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/user/favorites', {
+      const response = await fetch('http://127.0.0.1:5000/api/user/favorites', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

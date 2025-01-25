@@ -25,7 +25,7 @@ export default function BookingSuccessPage({ params }: { params: Promise<{ id: s
   useEffect(() => {
     const fetchBooking = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/booking/${id}`);
+        const response = await fetch(`http://127.0.0.1:5000/api/booking/${id}`);
         if (!response.ok) throw new Error('Failed to fetch booking');
         const data = await response.json();
         setBooking(data.booking);

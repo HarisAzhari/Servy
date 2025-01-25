@@ -62,7 +62,7 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ id: st
   useEffect(() => {
     const fetchServiceDetails = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/services/${id}`);
+        const response = await fetch(`http://127.0.0.1:5000/api/services/${id}`);
         if (!response.ok) {
           throw new Error('Service not found');
         }
@@ -88,7 +88,7 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ id: st
         console.log('Fetching time slots for:', formattedDate);
 
         const response = await fetch(
-          `http://localhost:5000/api/booking/timeslots?service_id=${service.id}&date=${formattedDate}`
+          `http://127.0.0.1:5000/api/booking/timeslots?service_id=${service.id}&date=${formattedDate}`
         );
 
         if (!response.ok) {
@@ -152,7 +152,7 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ id: st
         booking_time: timeFormatted
       };
   
-      const response = await fetch('http://localhost:5000/api/booking/create', {
+      const response = await fetch('http://127.0.0.1:5000/api/booking/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -196,7 +196,7 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ id: st
     try {
       const formattedDate = selectedDate.toISOString().split('T')[0];
       const response = await fetch(
-        `http://localhost:5000/api/booking/timeslots?service_id=${service.id}&date=${formattedDate}`
+        `http://127.0.0.1:5000/api/booking/timeslots?service_id=${service.id}&date=${formattedDate}`
       );
       
       if (!response.ok) {
