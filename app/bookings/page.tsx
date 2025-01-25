@@ -617,8 +617,8 @@ export default function BookingsPage() {
                     ? `/payment/${booking.id}`
                     : booking.status.toLowerCase() === 'pending'
                     ? `/service-details/${booking.service_id}?status=pending`
-                    : `/bookings/${booking.id}`
-                }
+                    : `/booking-details/${booking.id}`  // Make sure this matches exactly
+                  }
               >
                 <div className={`flex items-center justify-between ${isDarkMode ? 'bg-gray-800' : ''} rounded-lg p-4`}>
                   <div className="flex-1">
@@ -634,7 +634,7 @@ export default function BookingsPage() {
 
                     <div className="flex items-center mt-2">
                       <span className={`text-[13px] ${isDarkMode ? 'text-gray-300' : 'text-gray-900'}`}>
-                        Amount: ${booking.total_amount}
+                        Amount: RM{booking.total_amount}
                       </span>
                     </div>
 

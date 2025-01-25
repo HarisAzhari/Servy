@@ -30,7 +30,11 @@ interface Service {
   created_at: string;
   provider_id: number;
   status: boolean;
+  rating_count: number;    // Changed from total_reviews
+  total_rating: number;    // Changed from average_rating
+
 }
+
 
 interface TimeSlot {
   time: string;
@@ -67,6 +71,7 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ id: st
           throw new Error('Service not found');
         }
         const data = await response.json();
+        console.log('Service data:', data); // Add this to check the response
         setService(data);
       } catch (error) {
         console.error('Error fetching service details:', error);
@@ -77,6 +82,7 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ id: st
   
     fetchServiceDetails();
   }, [id]);
+
 
   // Fetch time slots when date changes
   useEffect(() => {
@@ -188,6 +194,33 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ id: st
       setIsCreatingBooking(false);
     }
   };
+
+  const StarRating: React.FC<{ rating: number; totalReviews: number; isDarkMode: boolean }> = ({ 
+    rating, 
+    totalReviews, 
+    isDarkMode 
+  }) => {
+    return (
+      <div className="flex items-center mb-2">
+        {[...Array(5)].map((_, i) => (
+          <Star 
+            key={i} 
+            className={`w-4 h-4 ${
+              i < Math.floor(rating) 
+                ? 'fill-yellow-400 text-yellow-400' 
+                : isDarkMode 
+                  ? 'text-gray-600' 
+                  : 'text-gray-300'
+            }`}
+          />
+        ))}
+        <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} ml-2`}>
+          ({totalReviews} {totalReviews === 1 ? 'Review' : 'Reviews'})
+        </span>
+      </div>
+    );
+  };
+  
 
   // Helper function to refresh time slots
   const refreshTimeSlots = async () => {
@@ -319,23 +352,23 @@ const handleModalClose = () => {
             alt={service.service_title}
             className="w-full h-full object-cover"
           />
-        </div>
+        </div>  
 
         {/* Service Info */}
         <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} p-4`}>
-          <div className="flex items-center mb-2">
-            {[...Array(5)].map((_, i) => (
-              <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-            ))}
-            <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} ml-2`}>
-              (0 Reviews)
-            </span>
-          </div>
+        {service && (
+  <StarRating 
+    rating={service.total_rating || 0}       // Changed from average_rating
+    totalReviews={service.rating_count || 0} // Changed from total_reviews
+    isDarkMode={isDarkMode}
+  />
+)}
+
           <h2 className={`text-xl font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} mb-2`}>
             {service.service_title}
           </h2>
           <div className="flex items-center justify-between mb-4">
-            <span className="text-2xl font-bold text-blue-500">${service.price}</span>
+            <span className="text-2xl font-bold text-blue-500">RM{service.price}</span>
           </div>
 
           <div className={`border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} pt-4`}>
@@ -391,37 +424,20 @@ const handleModalClose = () => {
         </div>
 
         {/* Action Buttons */}
-<div className={`fixed bottom-0 left-0 right-0 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-t p-4 flex items-center justify-between`}>
-  <div className="flex-1 flex items-center justify-around">
-    <button className="flex flex-col items-center">
-      <Phone className="w-6 h-6 text-blue-500" />
-      <span className={`text-xs mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Call</span>
-    </button>
-    <button className="flex flex-col items-center">
-      <MessageSquare className="w-6 h-6 text-blue-500" />
-      <span className={`text-xs mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Chat</span>
-    </button>
-    <button className="flex flex-col items-center">
-      <Map className="w-6 h-6 text-blue-500" />
-      <span className={`text-xs mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Map</span>
-    </button>
-    <button className="flex flex-col items-center">
-      <Share2 className="w-6 h-6 text-blue-500" />
-      <span className={`text-xs mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Share</span>
-    </button>
-  </div>
+<div className={`fixed bottom-0 left-0 right-0 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-t p-4`}>
   <button 
     onClick={status === 'pending' ? undefined : handleModalOpen}
     disabled={status === 'pending'}
-    className={`${
+    className={`w-full ${
       status === 'pending'
         ? 'bg-yellow-500 opacity-75 cursor-not-allowed'
         : 'bg-blue-500 hover:bg-blue-600'
-    } text-white px-8 py-3 rounded-lg ml-4 font-medium transition-colors`}
+    } text-white py-3 rounded-lg font-medium transition-colors`}
   >
     {status === 'pending' ? 'Pending' : 'Book Service'}
   </button>
 </div>
+
       </main>
 
       {/* Booking Modal */}

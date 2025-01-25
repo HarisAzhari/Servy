@@ -293,7 +293,7 @@ export default function HomePage() {
           <h2 className={`text-lg font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>
             Best Services
           </h2>
-          <Link href="/services" className="text-blue-500 text-sm font-medium">
+          <Link href="" className="text-blue-500 text-sm font-medium">
             See All
           </Link>
         </div>
