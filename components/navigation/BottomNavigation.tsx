@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { Home, Grid, ClipboardList, MessageSquare, User } from 'lucide-react';
+import { Home, Grid, ClipboardList, User, BookMarked } from 'lucide-react';
 
 const navItems = [
   {
@@ -21,9 +21,9 @@ const navItems = [
     path: '/bookings'
   },
   {
-    label: 'Message',
-    icon: MessageSquare,
-    path: '/messages'
+    label: 'Favourites',
+    icon: BookMarked,
+    path: '/favourites'
   },
   {
     label: 'Profile',

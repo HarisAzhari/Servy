@@ -1,19 +1,74 @@
 'use client'
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Eye, EyeOff } from 'lucide-react';
 
 export default function SignupPage() {
-  const [showPassword, setShowPassword] = React.useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    mobile: '', // Changed from phone to mobile to match backend
+    password: '',
+    confirmPassword: ''
+  });
+
   const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would normally handle form submission
-    // For now, just navigate to the create account page
-    router.push('/create-account');
+    setError('');
+    
+    // Validate passwords match
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      
+      const response = await fetch('http://beerescue.xyz:5000/api/user/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          mobile: formData.mobile, // Changed to match backend
+          password: formData.password
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Registration failed');
+      }
+
+      // Store the user ID
+      localStorage.setItem('user_id', data.user_id.toString());
+      
+      // Redirect to create account success page
+      router.push('/create-account');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Registration failed');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -33,11 +88,20 @@ export default function SignupPage() {
         </p>
       </div>
 
+      {error && (
+        <div className="mb-4 p-3 bg-red-100 text-red-600 rounded-lg text-center">
+          {error}
+        </div>
+      )}
+
       {/* Signup Form */}
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <input
             type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
             placeholder="Enter Name"
             className="w-full p-4 border border-gray-300 rounded-lg"
             required
@@ -47,6 +111,9 @@ export default function SignupPage() {
         <div>
           <input
             type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
             placeholder="Email Address"
             className="w-full p-4 border border-gray-300 rounded-lg"
             required
@@ -56,6 +123,9 @@ export default function SignupPage() {
         <div>
           <input
             type="tel"
+            name="mobile"
+            value={formData.mobile}
+            onChange={handleChange}
             placeholder="Mobile Number"
             className="w-full p-4 border border-gray-300 rounded-lg"
             required
@@ -65,6 +135,9 @@ export default function SignupPage() {
         <div className="relative">
           <input
             type={showPassword ? "text" : "password"}
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
             placeholder="Password"
             className="w-full p-4 border border-gray-300 rounded-lg pr-12"
             required
@@ -84,6 +157,9 @@ export default function SignupPage() {
         <div className="relative">
           <input
             type={showConfirmPassword ? "text" : "password"}
+            name="confirmPassword"
+            value={formData.confirmPassword}
+            onChange={handleChange}
             placeholder="Re-Enter Password"
             className="w-full p-4 border border-gray-300 rounded-lg pr-12"
             required
@@ -102,9 +178,10 @@ export default function SignupPage() {
 
         <button 
           type="submit"
-          className="w-full bg-blue-500 text-white py-4 rounded-lg font-medium"
+          disabled={loading}
+          className="w-full bg-blue-500 text-white py-4 rounded-lg font-medium disabled:bg-blue-300"
         >
-          Signup
+          {loading ? 'Creating Account...' : 'Signup'}
         </button>
       </form>
 
