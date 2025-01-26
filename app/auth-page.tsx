@@ -64,10 +64,12 @@ const LoginPage = () => {
     <div className="min-h-screen bg-white p-6 flex flex-col">
       {/* Logo */}
       <div className="mb-8 flex justify-center">
-        <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center">
-          <span className="text-white text-2xl font-semibold">Clean</span>
-        </div>
-      </div>
+  <img 
+    src="/image.png" 
+    alt="Clean Logo"
+    className="w-16 h-16 object-contain"
+  />
+</div>
 
       {/* Welcome Text */}
       <div className="text-center mb-8">
@@ -82,21 +84,6 @@ const LoginPage = () => {
           {error}
         </div>
       )}
-
-      {/* Social Login Buttons */}
-      <button className="mb-4 w-full h-12 border border-gray-300 rounded-lg flex items-center justify-center gap-0">
-        <img src="/apple3.png" alt="Apple logo" style={{ width: '60px', height: '60px', margin: 0, padding: 0 }} />
-        <span className="text-gray-700">Login with Apple</span>
-      </button>
-
-      <button className="mb-6 w-full py-3 px-4 border border-gray-300 rounded-lg flex items-center justify-center gap-2">
-        <img src="/api/placeholder/20/20" alt="Google logo" className="w-5 h-5" />
-        <span className="text-gray-700">Login with Google</span>
-      </button>
-
-      <div className="text-center text-sm text-gray-500 mb-6">
-        Or continue with email
-      </div>
 
       {/* Login Form */}
       <form onSubmit={handleSubmit} className="space-y-4">

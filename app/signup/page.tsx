@@ -75,10 +75,12 @@ export default function SignupPage() {
     <main className="min-h-screen bg-white p-6 flex flex-col">
       {/* Logo */}
       <div className="mb-8 flex justify-center">
-        <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center">
-          <span className="text-white text-2xl font-semibold">Clean</span>
-        </div>
-      </div>
+  <img 
+    src="/image.png" 
+    alt="Clean Logo"
+    className="w-16 h-16 object-contain"
+  />
+</div>
 
       {/* Header */}
       <div className="text-center mb-8">
