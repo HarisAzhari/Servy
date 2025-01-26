@@ -150,7 +150,7 @@ export default function HomePage() {
 
     const fetchServices = async () => {
       try {
-        const response = await fetch('http://127.0.0.1:5000/api/services');
+        const response = await fetch('http://beerescue.xyz:5000/api/services');
         if (!response.ok) throw new Error('Failed to fetch services');
         const data = await response.json();
 

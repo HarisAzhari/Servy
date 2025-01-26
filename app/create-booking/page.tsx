@@ -39,7 +39,7 @@ const CreateBooking: React.FC<CreateBookingProps> = ({ serviceId, serviceName })
       };
       
       // Make API call to create booking
-      const response = await fetch('http://127.0.0.1:5000/api/booking/create', {
+      const response = await fetch('http://beerescue.xyz:5000/api/booking/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

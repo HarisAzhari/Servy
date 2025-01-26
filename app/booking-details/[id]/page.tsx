@@ -88,7 +88,7 @@ export default function BookingDetailsPage({ params }: Props) {
   useEffect(() => {
     const fetchBookingDetails = async () => {
       try {
-        const response = await fetch(`http://127.0.0.1:5000/api/booking/${resolvedParams.id}`);
+        const response = await fetch(`http://beerescue.xyz:5000/api/booking/${resolvedParams.id}`);
         if (!response.ok) {
           throw new Error('Failed to fetch booking details');
         }

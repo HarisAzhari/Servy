@@ -72,7 +72,7 @@ const ReportModal = ({ booking, onClose, onSubmitRating }: ReportModalProps) => 
 
   const submitAutoRating = async () => {
     try {
-      const response = await fetch(`http://127.0.0.1:5000/api/service/${booking.service_id}/review`, {
+      const response = await fetch(`http://beerescue.xyz:5000/api/service/${booking.service_id}/review`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -125,7 +125,7 @@ const ReportModal = ({ booking, onClose, onSubmitRating }: ReportModalProps) => 
       if (description) formData.append('description', description);
       if (video) formData.append('video', video);
 
-      const response = await fetch(`http://127.0.0.1:5000/api/provider/${booking.provider_id}/report`, {
+      const response = await fetch(`http://beerescue.xyz:5000/api/provider/${booking.provider_id}/report`, {
         method: 'POST',
         body: formData,
       });
@@ -241,7 +241,7 @@ const RatingModal = ({ booking, onClose, onSubmitRating }: RatingModalProps) => 
 
   const handleSubmit = async () => {
     try {
-      const response = await fetch(`http://127.0.0.1:5000/api/service/${booking.service_id}/review`, {
+      const response = await fetch(`http://beerescue.xyz:5000/api/service/${booking.service_id}/review`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -354,7 +354,7 @@ const ServiceRating = ({ serviceId }: { serviceId: number }) => {
   useEffect(() => {
     const fetchRatingStats = async () => {
       try {
-        const response = await fetch(`http://127.0.0.1:5000/api/service/${serviceId}/rating-stats`);
+        const response = await fetch(`http://beerescue.xyz:5000/api/service/${serviceId}/rating-stats`);
         if (response.ok) {
           const data = await response.json();
           setStats(data);
@@ -414,7 +414,7 @@ export default function BookingsPage() {
           return;
         }
   
-        const response = await fetch(`http://127.0.0.1:5000/api/booking/user/${userId}/bookings`);
+        const response = await fetch(`http://beerescue.xyz:5000/api/booking/user/${userId}/bookings`);
         if (!response.ok) throw new Error('Failed to fetch bookings');
         const data: ApiResponse = await response.json();
   
@@ -425,7 +425,7 @@ export default function BookingsPage() {
         const unratedCompleted = [];
         for (const booking of completedBookings) {
           const reviewStatusResponse = await fetch(
-            `http://127.0.0.1:5000/api/booking/${booking.id}/user/${userId}/review-status`
+            `http://beerescue.xyz:5000/api/booking/${booking.id}/user/${userId}/review-status`
           );
           
           if (reviewStatusResponse.ok) {
@@ -470,7 +470,7 @@ export default function BookingsPage() {
     e.stopPropagation(); // Prevent event bubbling
     
     try {
-      const response = await fetch(`http://127.0.0.1:5000/api/booking/${bookingId}/status`, {
+      const response = await fetch(`http://beerescue.xyz:5000/api/booking/${bookingId}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'

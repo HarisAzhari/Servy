@@ -31,7 +31,7 @@ export default function CheckoutPage({ params }: { params: Promise<{ id: string 
   useEffect(() => {
     const fetchBooking = async () => {
       try {
-        const response = await fetch(`http://127.0.0.1:5000/api/booking/${id}`);
+        const response = await fetch(`http://beerescue.xyz:5000/api/booking/${id}`);
         if (!response.ok) throw new Error('Failed to fetch booking');
         const data = await response.json();
         

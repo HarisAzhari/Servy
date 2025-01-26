@@ -39,7 +39,7 @@ export default function CategoriesPage() {
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const response = await fetch('http://127.0.0.1:5000/api/services');
+        const response = await fetch('http://beerescue.xyz:5000/api/services');
         const data = await response.json();
         
         // Count services by category
